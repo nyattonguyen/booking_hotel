@@ -4,7 +4,7 @@ import sendToken from "../utills/jwtToken.js";
 import ErrorHandler from "../utills/errorHandle.js";
 import { sendEmail } from "../utills/sendEmailChangeOrForgotPassword.js";
 import crypto from "crypto";
-import { googleAuth } from "google-auth-library";
+import { GoogleAuth } from "google-auth-library";
 
 export const register = catchAsyncError(async (req, res, _next) => {
   const { username, phone, password, email } = req.body;
@@ -23,11 +23,10 @@ export const register = catchAsyncError(async (req, res, _next) => {
 });
 export const login = catchAsyncError(async (req, res, _next) => {
   const { email, password } = req.body;
-  if (!email || !password) {
+  if (!email || !password || email === "" || password === "") {
     return _next(new ErrorHandler("Please enter email/password...", 400));
   }
   const user = await UserModel.findOne({ email }).select("+password");
-  console.log(user);
   if (!user) {
     return _next(new ErrorHandler("Wrong email or password", 401));
   }
@@ -42,29 +41,35 @@ export const login = catchAsyncError(async (req, res, _next) => {
 
   sendToken(user, 200, res);
 });
-
 export const loginWithGoogle = catchAsyncError(async (req, res, _next) => {
-  const code = req.body.code;
+  if (!req.body.code || req.body.code.length === 0) {
+    return res.status(400).json({ message: "Invalid code." });
+  }
+  console.log(req.body.code);
+  if (req.user) {
+    return res.redirect("/");
+  }
 
-  // Lấy thông tin người dùng từ Google
-  const googleUser = await googleAuth.signInWithRedirect(code);
+  const googleUser = await GoogleAuth.signInWithRedirect(req.body.code);
 
   const user = await UserModel.findOne({ email: googleUser.email });
 
   if (!user) {
     const user = new UserModel({
       id: googleUser.id,
-      displayName: googleUser.displayName,
+      username: googleUser.displayName,
       email: googleUser.email,
     });
 
     await user.save();
   }
 
-  res.status(200).json({
-    id: user.id,
-    displayName: user.displayName,
-    email: user.email,
+  req.login(user, (err) => {
+    if (err) {
+      return res.status(500).json({ message: err.message });
+    }
+
+    res.redirect("/");
   });
 });
 export const logout = catchAsyncError(async (req, res, _next) => {

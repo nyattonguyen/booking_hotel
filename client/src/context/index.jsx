@@ -17,11 +17,9 @@ export default function AuthProvider({ children }) {
       console.log("[From AuthProvider]", { user });
       if (user?.uid) {
         setUser(user);
-        if (user.accessToken !== localStorage.getItem("accessToken")) {
-          localStorage.setItem("accessToken", user.accessToken);
-          window.location.reload();
-        }
         setIsLoading(false);
+        // navigate("/");
+
         return;
       }
 
@@ -36,6 +34,13 @@ export default function AuthProvider({ children }) {
       unsubcribed();
     };
   }, [auth]);
+
+  // Move the localStorage.setItem() call outside of the onIdTokenChanged listener
+  useEffect(() => {
+    if (user?.accessToken !== localStorage.getItem("accessToken")) {
+      localStorage.setItem("accessToken", user.accessToken);
+    }
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>

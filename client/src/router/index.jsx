@@ -3,7 +3,6 @@ import Login from "../pages/Login";
 import ErrorPage from "../pages/Error404";
 import Home from "../pages/Home";
 import AuthProvider from "../context";
-
 const AuthLayout = () => {
   return (
     <AuthProvider>
@@ -14,7 +13,7 @@ const AuthLayout = () => {
 
 export default createBrowserRouter([
   {
-    element: <AuthProvider />,
+    element: <AuthLayout />,
     errorElement: <ErrorPage />,
     children: [
       {

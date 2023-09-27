@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   MDBContainer,
   MDBCol,
@@ -15,19 +15,42 @@ import clientAxios from "../api/index";
 export default function Login() {
   const auth = getAuth();
   const { user } = useContext(AuthContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  if (localStorage.getItem("accessToken")) {
+    return <Navigate to="/" />;
+  }
   const handleLoginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
 
-    const data = await signInWithPopup(auth, provider);
-    console.log(data);
+    const data = await signInWithPopup(auth, provider, {
+      openerPolicy: "same-origin",
+    });
+
+    const response = await clientAxios.post("/user/login-gg", {
+      id: data.user.uid,
+      name: data.user.displayName,
+      email: data.user.email,
+    });
+
+    if (response.status === 200) {
+      return <Navigate to="/" />;
+    }
+
+    console.log(response.data.message);
+  };
+
+  const handleLogin = () => {
+    if (email === "" || password === "") {
+      return;
+    }
     clientAxios
-      .post("/login-gg", {
-        id: user.uid,
-        name: user.displayName,
-        email: user.email,
+      .post("/user/login", {
+        email,
+        password,
       })
-      .then(() => {
-        console.log("ok");
+      .then((data) => {
+        localStorage.setItem("accessToken", data.token);
         return <Navigate to="/" />;
       })
       .catch((err) => {
@@ -35,13 +58,9 @@ export default function Login() {
       });
   };
 
-  //   if (localStorage.getItem("accessToken")) {
-  //     return <Navigate to="/" />;
-  //   }
-
   return (
     <MDBContainer fluid className="p-3 my-5">
-      <MDBRow>
+      <MDBRow className="mt-2">
         <MDBCol col="10" md="6">
           <img
             src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
@@ -51,12 +70,15 @@ export default function Login() {
         </MDBCol>
 
         <MDBCol col="4" md="6">
-          <h1 className="mb-3 mb-2">MT BOOKING</h1>
+          <MDBContainer className="align-middle justify-center">
+            <h1 className="mb-3 mb-2 ">MT BOOKING</h1>
+          </MDBContainer>
           <MDBInput
             wrapperClass="mb-4"
             label="Email address"
             id="formControlLg"
             type="email"
+            onChange={(e) => setEmail(e.target.value)}
             size="lg"
           />
           <MDBInput
@@ -65,6 +87,7 @@ export default function Login() {
             id="formControlLg"
             type="password"
             size="lg"
+            onChange={(e) => setPassword(e.target.value)}
           />
 
           <div className="d-flex justify-content-between mx-4 mb-4">
@@ -77,7 +100,7 @@ export default function Login() {
             <a href="!#">Forgot password?</a>
           </div>
 
-          <MDBBtn className="mb-4 w-100" size="lg">
+          <MDBBtn className="mb-4 w-100" size="lg" onClick={handleLogin}>
             Sign in
           </MDBBtn>
 
@@ -100,7 +123,18 @@ export default function Login() {
             style={{ backgroundColor: "#55acee" }}
             onClick={handleLoginWithGoogle}
           >
-            <MDBIcon fab icon="google" className="mx-2" />
+            <MDBIcon
+              fab
+              icon="google"
+              className="mx-2"
+              style={{
+                color:
+                  "linear-gradient(to right, #4285F4, #FF0000, #FFFF00, #008000, #0000FF)",
+                "& .fab-img": {
+                  fill: "linear-gradient(to right, #4285F4, #FF0000, #FFFF00, #008000, #0000FF)",
+                },
+              }}
+            />
             Continue with Google
           </MDBBtn>
         </MDBCol>
