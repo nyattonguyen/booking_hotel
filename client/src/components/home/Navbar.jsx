@@ -1,14 +1,12 @@
 import { Fragment, useContext } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context";
 import { Avatar } from "@mui/material";
 const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Team", href: "#", current: false },
-  { name: "Projects", href: "#", current: false },
-  { name: "Calendar", href: "#", current: false },
+  { name: "MT Booking", href: "/", current: false },
+  { name: "Vé máy bay", href: "", current: false },
 ];
 
 function classNames(...classes) {
@@ -18,8 +16,14 @@ export default function Navbar() {
   const {
     user: { displayName, photoURL, auth },
   } = useContext(AuthContext);
+  const navigate = useNavigate();
 
+  const handleHomeClick = () => {
+    navigate("/");
+  };
   const handleLogout = async () => {
+    console.log(auth);
+    console.log(localStorage.removeItem("accessToken"));
     if (auth) {
       await auth.signOut();
     } else {
@@ -27,8 +31,9 @@ export default function Navbar() {
     }
     return <Navigate to="/login" />;
   };
+
   return (
-    <Disclosure as="nav" className="bg-gray-800">
+    <Disclosure as="nav" className="bg-black">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -56,19 +61,19 @@ export default function Navbar() {
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
-                      <a
+                      <p
+                        onClick={handleHomeClick}
                         key={item.name}
-                        href={item.href}
                         className={classNames(
                           item.current
                             ? "bg-gray-900 text-white"
                             : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                          "rounded-md px-3 py-2 text-sm font-medium"
+                          "rounded-md px-3 py-2 text-sm font-medium mt-3"
                         )}
                         aria-current={item.current ? "page" : undefined}
                       >
                         {item.name}
-                      </a>
+                      </p>
                     ))}
                   </div>
                 </div>
@@ -110,7 +115,7 @@ export default function Navbar() {
                       <Menu.Item>
                         {({ active }) => (
                           <Link
-                            href="#"
+                            to="profile/iduser"
                             className={classNames(
                               active ? "bg-gray-100" : "",
                               "block px-4 py-2 text-sm text-gray-700"
@@ -120,19 +125,7 @@ export default function Navbar() {
                           </Link>
                         )}
                       </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            href="#"
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            Cài đặt
-                          </Link>
-                        )}
-                      </Menu.Item>
+
                       <Menu.Item>
                         {({ active }) => (
                           <Link

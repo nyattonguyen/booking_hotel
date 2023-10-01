@@ -3,6 +3,10 @@ import Login from "../pages/Login";
 import ErrorPage from "../pages/Error404";
 import Home from "../pages/Home";
 import AuthProvider from "../context";
+import { CardDetail } from "../components/card/CardDetail";
+import ProtectedRouter from "./ProtectedRouter";
+import { Order } from "../components/order/Order";
+import Profile from "../components/user/Profile";
 const AuthLayout = () => {
   return (
     <AuthProvider>
@@ -23,17 +27,18 @@ export default createBrowserRouter([
       {
         element: <Home />,
         path: "/",
-        // element: <ProtectedRoute />,
-        // children: [
-        //   {
-        //     element: <Home />,
-        //     path: "/",
-        //     loader: folderLoader,
-        //     children: [
-
-        //     ],
-        //   },
-        // ],
+      },
+      {
+        element: <CardDetail />,
+        path: "/idproduct",
+      },
+      {
+        element: <Order />,
+        path: "/order",
+      },
+      {
+        element: <Profile />,
+        path: "/profile/iduser",
       },
     ],
   },

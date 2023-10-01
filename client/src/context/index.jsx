@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 
 export const AuthContext = createContext();
@@ -14,20 +14,21 @@ export default function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubcribed = auth.onIdTokenChanged((user) => {
-      console.log("[From AuthProvider]", { user });
-      if (user?.uid) {
+      console.log("[From AuthProvider]", user);
+      if (user != null && user?.uid) {
         setUser(user);
         setIsLoading(false);
-        // navigate("/");
-
+        navigate("/");
+        console.log("get out");
         return;
       }
 
-      // reset user info
+      console.log("here");
+
       setIsLoading(false);
       setUser({});
       localStorage.clear();
-      navigate("/login");
+      <Navigate to="/login" />;
     });
 
     return () => {
@@ -36,6 +37,7 @@ export default function AuthProvider({ children }) {
   }, [auth]);
 
   // Move the localStorage.setItem() call outside of the onIdTokenChanged listener
+  console.log("c", user.accessToken);
   useEffect(() => {
     if (user?.accessToken !== localStorage.getItem("accessToken")) {
       localStorage.setItem("accessToken", user.accessToken);

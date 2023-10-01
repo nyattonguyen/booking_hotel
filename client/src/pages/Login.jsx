@@ -17,7 +17,11 @@ export default function Login() {
   const { user } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  if (localStorage.getItem("accessToken")) {
+  console.log("main", localStorage.getItem("accessToken"));
+  if (
+    localStorage.getItem("accessToken") &&
+    localStorage.getItem("accessToken") !== undefined
+  ) {
     return <Navigate to="/" />;
   }
   const handleLoginWithGoogle = async () => {
@@ -26,7 +30,7 @@ export default function Login() {
     const data = await signInWithPopup(auth, provider, {
       openerPolicy: "same-origin",
     });
-
+    console.log("day ne");
     const response = await clientAxios.post("/user/login-gg", {
       id: data.user.uid,
       name: data.user.displayName,
@@ -41,8 +45,14 @@ export default function Login() {
   };
 
   const handleLogin = () => {
-    if (email === "" || password === "") {
+    if (email === "" && password === "") {
       return;
+    }
+    if (
+      localStorage.getItem("accessToken") &&
+      localStorage.getItem("accessToken") !== undefined
+    ) {
+      return <Navigate to="/" />;
     }
     clientAxios
       .post("/user/login", {
@@ -50,12 +60,18 @@ export default function Login() {
         password,
       })
       .then((data) => {
+        console.log(data);
         localStorage.setItem("accessToken", data.token);
         return <Navigate to="/" />;
       })
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const onSubMit = (e) => {
+    e.preventDefault();
+    handleLogin();
   };
 
   return (
@@ -73,36 +89,38 @@ export default function Login() {
           <MDBContainer className="align-middle justify-center">
             <h1 className="mb-3 mb-2 ">MT BOOKING</h1>
           </MDBContainer>
-          <MDBInput
-            wrapperClass="mb-4"
-            label="Email address"
-            id="formControlLg"
-            type="email"
-            onChange={(e) => setEmail(e.target.value)}
-            size="lg"
-          />
-          <MDBInput
-            wrapperClass="mb-4"
-            label="Password"
-            id="formControlLg"
-            type="password"
-            size="lg"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
-          <div className="d-flex justify-content-between mx-4 mb-4">
-            <MDBCheckbox
-              name="flexCheck"
-              value=""
-              id="flexCheckDefault"
-              label="Remember me"
+          <form onSubmit={onSubMit}>
+            <MDBInput
+              wrapperClass="mb-4"
+              label="Email address"
+              id="formControlLg"
+              type="email"
+              onChange={(e) => setEmail(e.target.value)}
+              size="lg"
             />
-            <a href="!#">Forgot password?</a>
-          </div>
+            <MDBInput
+              wrapperClass="mb-4"
+              label="Password"
+              id="formControlLg"
+              type="password"
+              size="lg"
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-          <MDBBtn className="mb-4 w-100" size="lg" onClick={handleLogin}>
-            Sign in
-          </MDBBtn>
+            <div className="d-flex justify-content-between mx-4 mb-4">
+              <MDBCheckbox
+                name="flexCheck"
+                value=""
+                id="flexCheckDefault"
+                label="Remember me"
+              />
+              <a href="!#">Forgot password?</a>
+            </div>
+
+            <MDBBtn className="mb-4 w-100" size="lg" onClick={handleLogin}>
+              Sign in
+            </MDBBtn>
+          </form>
 
           <div className="divider d-flex align-items-center my-4">
             <p className="text-center fw-bold mx-3 mb-0">OR</p>
