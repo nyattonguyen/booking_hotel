@@ -79,6 +79,17 @@ export const updateCategoryId = catchAsyncError(async (req, res, next) => {
     message: "update category success",
   });
 });
+export const deleteCategory = catchAsyncError(async (req, res, next) => {
+  const categoryId = await CategoryModel.findById(req.params.id);
+  if (!categoryId) return next(new ErrorHandler("Not found category...", 404));
+
+  const category = await CategoryModel.findByIdAndDelete(categoryId.id);
+
+  res.status(200).json({
+    success: true,
+    message: "deleted category success",
+  });
+});
 export const updateCategoryStatus = catchAsyncError(async (req, res, next) => {
   const category = await CategoryModel.findById(req.params.id);
 

@@ -10,68 +10,57 @@ import {
 } from "mdb-react-ui-kit";
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import { AuthContext } from "../context";
-import { Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import clientAxios from "../api/index";
 export default function Login() {
   const auth = getAuth();
   const { user } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  console.log("main", localStorage.getItem("accessToken"));
-  if (
-    localStorage.getItem("accessToken") &&
-    localStorage.getItem("accessToken") !== undefined
-  ) {
-    return <Navigate to="/" />;
-  }
+  const navigate = useNavigate();
+
   const handleLoginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
 
-    const data = await signInWithPopup(auth, provider, {
-      openerPolicy: "same-origin",
-    });
-    console.log("day ne");
-    const response = await clientAxios.post("/user/login-gg", {
-      id: data.user.uid,
-      name: data.user.displayName,
-      email: data.user.email,
+    const {
+      user: { uid, displayName, photoURL, email },
+    } = await signInWithPopup(auth, provider);
+
+    const response = await clientAxios.post("/auth/login-gg", {
+      uid,
+      displayName,
+      photoURL,
+      email,
     });
 
     if (response.status === 200) {
-      return <Navigate to="/" />;
+      navigate("/");
+    } else {
+      navigate("/login");
     }
 
-    console.log(response.data.message);
+    // console.log(response.data.message);
   };
 
+  ///\\\///
   const handleLogin = () => {
     if (email === "" && password === "") {
       return;
     }
-    if (
-      localStorage.getItem("accessToken") &&
-      localStorage.getItem("accessToken") !== undefined
-    ) {
-      return <Navigate to="/" />;
-    }
+
     clientAxios
-      .post("/user/login", {
+      .post("/auth/login", {
         email,
         password,
       })
       .then((data) => {
         console.log(data);
         localStorage.setItem("accessToken", data.token);
-        return <Navigate to="/" />;
+        navigate("/");
       })
       .catch((err) => {
         console.log(err);
       });
-  };
-
-  const onSubMit = (e) => {
-    e.preventDefault();
-    handleLogin();
   };
 
   return (
@@ -89,11 +78,10 @@ export default function Login() {
           <MDBContainer className="align-middle justify-center">
             <h1 className="mb-3 mb-2 ">MT BOOKING</h1>
           </MDBContainer>
-          <form onSubmit={onSubMit}>
+          <div>
             <MDBInput
               wrapperClass="mb-4"
               label="Email address"
-              id="formControlLg"
               type="email"
               onChange={(e) => setEmail(e.target.value)}
               size="lg"
@@ -101,7 +89,6 @@ export default function Login() {
             <MDBInput
               wrapperClass="mb-4"
               label="Password"
-              id="formControlLg"
               type="password"
               size="lg"
               onChange={(e) => setPassword(e.target.value)}
@@ -114,13 +101,13 @@ export default function Login() {
                 id="flexCheckDefault"
                 label="Remember me"
               />
-              <a href="!#">Forgot password?</a>
+              <Link href="">Forgot password?</Link>
             </div>
 
             <MDBBtn className="mb-4 w-100" size="lg" onClick={handleLogin}>
               Sign in
             </MDBBtn>
-          </form>
+          </div>
 
           <div className="divider d-flex align-items-center my-4">
             <p className="text-center fw-bold mx-3 mb-0">OR</p>

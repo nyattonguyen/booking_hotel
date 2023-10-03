@@ -31,7 +31,7 @@ const roomSchema = new mongoose.Schema(
       area: { type: String, required: true },
       text: { type: String, required: true },
     },
-    stock: { type: String, required: true },
+    stock: { type: String, required: true, default: "Còn phòng" },
   },
   { timestamps: true }
 );

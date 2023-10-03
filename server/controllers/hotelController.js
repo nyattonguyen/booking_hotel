@@ -4,17 +4,15 @@ import ErrorHandler from "../utills/errorHandle.js";
 import { CategoryModel, HotelModel, UserModel } from "../models/index.js";
 
 export const getAllHotel = catchAsyncError(async (req, res, next) => {
-  const hotel = await HotelModel.find().where({ status: false });
-  const hotelCount = await HotelModel.count();
+  const hotels = await HotelModel.find().where({ status: true });
   res.status(200).json({
-    hotel,
+    hotels,
     message: "get hotel successfully",
     success: true,
-    hotelCount,
   });
 });
 export const getAllHotelMain = catchAsyncError(async (req, res, next) => {
-  const hotel = await HotelModel.find();
+  const hotel = await HotelModel.find().sort();
   const hotelCount = await HotelModel.count();
 
   res.status(200).json({
@@ -57,11 +55,11 @@ export const createHotel = catchAsyncError(async (req, res, next) => {
   });
 });
 export const getOneHotel = catchAsyncError(async (req, res, next) => {
-  const hotelId = await HotelModel.findById(req.params.id).select("-user");
-  if (!hotelId) return next(new ErrorHandler("Error get hotel ...", 400));
+  const hotel = await HotelModel.findById(req.params.id).select("-user");
+  if (!hotel) return next(new ErrorHandler("Error get hotel ...", 400));
 
   res.status(200).json({
-    hotelId,
+    hotel,
     success: true,
     message: "Get hotel id successfully!!!",
   });

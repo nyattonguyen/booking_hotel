@@ -12,6 +12,7 @@ categoryRoute.get(
   categoryController.getAllCategory
 );
 categoryRoute.get("/:id", categoryController.updateCategoryStatus);
+categoryRoute.delete("/:id", categoryController.deleteCategory);
 
 categoryRoute.post(
   "/",

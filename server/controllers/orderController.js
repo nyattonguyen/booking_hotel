@@ -20,7 +20,6 @@ export const createOrder = catchAsyncError(async (req, res, next) => {
     if (!room) return next(new ErrorHandler("Room not found", 404));
     totalPrice += orderItem.quantity * room.price * totalDays;
   }
-  console.log(totalPrice);
   totalPrice = parseFloat(totalPrice);
   const newOrder = await OrderModel.create({
     orderItems,
@@ -60,7 +59,7 @@ export const getOneOrder = catchAsyncError(async (req, res, next) => {
   });
 });
 export const myOrders = catchAsyncError(async (req, res, _next) => {
-  const orders = await OrderModel.find({ user: req.user._id });
+  const orders = await OrderModel.find({ user: req.params.id });
   res.status(200).json({
     message: "get my orders successfully",
     orders,

@@ -30,6 +30,10 @@ const hotelSchema = new mongoose.Schema(
       ref: "User",
       require: true,
     },
+    extra: {
+      type: String,
+      required: true,
+    },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",

@@ -2,34 +2,34 @@ import express from "express";
 import { hotelController } from "../controllers/index.js";
 import { isAuthenticatedUser, authorizeRoles } from "../middleware/auth.js";
 
-const roomRoute = express.Router();
+const hotelRoute = express.Router();
 
-roomRoute.get("/", hotelController.getAllHotel);
-roomRoute.get(
+hotelRoute.get("/", hotelController.getAllHotel);
+hotelRoute.get(
   "/all",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   hotelController.getAllHotelMain
 );
-roomRoute.post(
+hotelRoute.post(
   "/",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   hotelController.createHotel
 );
-roomRoute.get("/:id", hotelController.getOneHotel);
+hotelRoute.get("/:id", hotelController.getOneHotel);
 
-roomRoute.put(
+hotelRoute.put(
   "/:id",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   hotelController.updateHotel
 );
 
-roomRoute.get(
+hotelRoute.get(
   "/change-status/:id",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   hotelController.updateHotelStatus
 );
-export default roomRoute;
+export default hotelRoute;

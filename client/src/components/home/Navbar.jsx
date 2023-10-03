@@ -4,6 +4,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context";
 import { Avatar } from "@mui/material";
+import { Typography } from "@material-tailwind/react";
 const navigation = [
   { name: "MT Booking", href: "/", current: false },
   { name: "Vé máy bay", href: "", current: false },
@@ -23,15 +24,16 @@ export default function Navbar() {
   };
   const handleLogout = async () => {
     console.log(auth);
-    console.log(localStorage.removeItem("accessToken"));
     if (auth) {
       await auth.signOut();
     } else {
       localStorage.removeItem("accessToken");
     }
-    return <Navigate to="/login" />;
+    navigate("/login");
   };
-
+  const onProfile = () => {
+    navigate("/profile/iduser");
+  };
   return (
     <Disclosure as="nav" className="bg-black">
       {({ open }) => (
@@ -114,15 +116,15 @@ export default function Navbar() {
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <Menu.Item>
                         {({ active }) => (
-                          <Link
-                            to="profile/iduser"
+                          <Typography
+                            onClick={onProfile}
                             className={classNames(
                               active ? "bg-gray-100" : "",
                               "block px-4 py-2 text-sm text-gray-700"
                             )}
                           >
                             Thông tin của bạn
-                          </Link>
+                          </Typography>
                         )}
                       </Menu.Item>
 

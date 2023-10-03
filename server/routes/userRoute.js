@@ -4,11 +4,6 @@ import { isAuthenticatedUser, authorizeRoles } from "../middleware/auth.js";
 
 const userRouter = express.Router();
 
-userRouter.post("/register", userController.register);
-userRouter.post("/login", userController.login);
-userRouter.post("/login-gg", userController.loginWithGoogle);
-
-userRouter.get("/logout", userController.logout);
 userRouter.get("/me", isAuthenticatedUser, userController.getUserDetails);
 userRouter.put("/me/update", isAuthenticatedUser, userController.updateUser);
 

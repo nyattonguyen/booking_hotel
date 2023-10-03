@@ -38,10 +38,11 @@ const TABLE_ROWS = [
   },
 ];
 
-export function ListRoom() {
+export function ListRoom(props) {
+  const rooms = props.room;
+
   function formatPrice(price) {
     price = price.toLocaleString("vi", { style: "currency", currency: "VND" });
-    // Thêm đơn vị tiền tệ
     return price;
   }
   const [dateNow, setDateNow] = useState();
@@ -54,6 +55,7 @@ export function ListRoom() {
     startDate: new Date(),
     endDate: new Date().setMonth(11),
   });
+  console.log("time", dateCheckinChechout);
 
   const timePresent = moment().format("HH:mm");
   const handleChangeValueDate = (e) => {
@@ -65,7 +67,6 @@ export function ListRoom() {
     } else if (startDate === dateNow && timePresent > "11:00") {
       alert("Vui lòng đặt phỏng trước 11h");
       moment(startDate).add(1, "day");
-      console.log(moment(startDate).add(1, "day"));
       setDateCheckinChechout();
     } else {
       setDateCheckinChechout(e);
@@ -73,10 +74,10 @@ export function ListRoom() {
   };
   return (
     <div className="block w-3/4">
-      <div className=" w-full rounded-xl border-solid border-black border-1 bg-blue-gray-400 h-14 flex justify-center ">
+      <div className=" w-full rounded-xl font-semibold border-solid border-black border-1 bg-[#003b95] h-14 flex justify-center ">
         <div className="mt-2 w-4/5">
           <Datepicker
-            primaryColor={"rose"}
+            containerClassName="relative font-semibold"
             value={dateCheckinChechout}
             onChange={handleChangeValueDate}
             showShortcuts={true}
@@ -101,7 +102,7 @@ export function ListRoom() {
                     <Typography
                       variant="small"
                       color="blue-gray"
-                      className="font-normal leading-none opacity-70 font-semibold text-lg"
+                      className=" leading-none opacity-70 font-semibold text-lg"
                     >
                       {head}
                     </Typography>
@@ -110,15 +111,15 @@ export function ListRoom() {
               </tr>
             </thead>
             <tbody>
-              {TABLE_ROWS.map(
-                ({ id, name, numberBed, amount, price }, index) => {
+              {rooms?.map(
+                ({ _id, name, numberBed, amount, price, stock }, index) => {
                   const isLast = index === TABLE_ROWS.length - 1;
                   const classes = isLast
                     ? "p-4"
                     : "p-4 border-b border-blue-gray-50";
 
                   return (
-                    <tr key={id}>
+                    <tr key={_id}>
                       <td className={classes}>
                         <div className="flex items-center gap-3">
                           <BungalowIcon></BungalowIcon>
@@ -133,7 +134,7 @@ export function ListRoom() {
                             <Typography
                               variant="small"
                               color="blue-gray"
-                              className="font-normal opacity-70"
+                              className="font-normal opacity-70 font-semibold"
                             >
                               {numberBed}
                               <SingleBedIcon></SingleBedIcon>Giường lớn
@@ -142,14 +143,15 @@ export function ListRoom() {
                         </div>
                       </td>
                       <td className={classes}>
-                        <div className="flex flex-col">
+                        <div className="flex ">
                           <Typography
                             variant="small"
                             color="blue-gray"
-                            className="font-normal"
+                            className="font-semibold text-base mr-1"
                           >
-                            {amount} <PersonIcon />
+                            {amount}
                           </Typography>
+                          <PersonIcon />
                         </div>
                       </td>
                       <td className={classes}>
@@ -159,7 +161,7 @@ export function ListRoom() {
                             color="blue-gray"
                             className="font-normal text-lg"
                           >
-                            VND {price}
+                            VND {stock === "Còn phòng" ? price : "Hết phòng"}
                           </Typography>
                         </div>
                       </td>

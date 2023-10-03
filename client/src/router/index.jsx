@@ -30,7 +30,7 @@ export default createBrowserRouter([
       },
       {
         element: <CardDetail />,
-        path: "/idproduct",
+        path: `/hotel/:hotelId`,
       },
       {
         element: <Order />,

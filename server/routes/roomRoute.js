@@ -24,6 +24,7 @@ roomRoute.put(
   authorizeRoles("admin"),
   roomController.updateRoom
 );
+roomRoute.get("/byhotel/:id", roomController.getAllRoomByHotel);
 roomRoute.get("/:id", roomController.getRoom);
 roomRoute.get("/:id", roomController.updateRoom); // change disable // enable product
 

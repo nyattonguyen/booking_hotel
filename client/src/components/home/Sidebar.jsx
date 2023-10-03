@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Typography,
@@ -11,28 +11,10 @@ import {
 
 import { CubeTransparentIcon } from "@heroicons/react/24/outline";
 
-export function Sidebar() {
-  const [open, setOpen] = React.useState(0);
-  const [openAlert, setOpenAlert] = React.useState(true);
-
-  const handleOpen = (value) => {
-    setOpen(open === value ? 0 : value);
-  };
-
-  const listCategory = [
-    {
-      id: 1,
-      title: "Hotel",
-    },
-    {
-      id: 2,
-      title: "Resort",
-    },
-    {
-      id: 3,
-      title: "Villa",
-    },
-  ];
+export function Sidebar(props) {
+  const listCategory = props.listCategory;
+  const [open, setOpen] = useState(0);
+  const [openAlert, setOpenAlert] = useState(true);
   const listArea = [
     {
       id: 1,
@@ -73,7 +55,7 @@ export function Sidebar() {
         </Typography>
       </div>
       <List>
-        {listCategory.map((data) => {
+        {listCategory?.map((data) => {
           return (
             <ListItem key={data.id} className="font-semibold">
               <ListItemPrefix>

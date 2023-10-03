@@ -28,7 +28,7 @@ orderRoute.post(
   authorizeRoles("admin"),
   orderController.calculateDaylyRevenue
 );
-orderRoute.get("/me", isAuthenticatedUser, orderController.myOrders);
+orderRoute.get("/me/:id", isAuthenticatedUser, orderController.myOrders);
 orderRoute.get("/:id", isAuthenticatedUser, orderController.getOneOrder);
 orderRoute.get(
   "/change-status/:id",

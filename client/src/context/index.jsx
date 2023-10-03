@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 
 export const AuthContext = createContext();
@@ -19,16 +19,13 @@ export default function AuthProvider({ children }) {
         setUser(user);
         setIsLoading(false);
         navigate("/");
-        console.log("get out");
         return;
       }
-
-      console.log("here");
 
       setIsLoading(false);
       setUser({});
       localStorage.clear();
-      <Navigate to="/login" />;
+      navigate("/login");
     });
 
     return () => {
@@ -37,7 +34,6 @@ export default function AuthProvider({ children }) {
   }, [auth]);
 
   // Move the localStorage.setItem() call outside of the onIdTokenChanged listener
-  console.log("c", user.accessToken);
   useEffect(() => {
     if (user?.accessToken !== localStorage.getItem("accessToken")) {
       localStorage.setItem("accessToken", user.accessToken);

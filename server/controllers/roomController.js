@@ -24,6 +24,17 @@ export const getAllRoom = catchAsyncError(async (req, res, next) => {
     roomCount,
   });
 });
+
+export const getAllRoomByHotel = catchAsyncError(async (req, res, next) => {
+  const room = await RoomModel.find().where({ hotel: req.params.id });
+
+  res.status(200).json({
+    room,
+    message: "get rooms by hotel successfully",
+    success: true,
+  });
+});
+
 export const getAllAdminRoom = catchAsyncError(async (req, res, next) => {
   const room = await RoomModel.find().sort({ status: false });
   const roomCount = await RoomModel.count();
