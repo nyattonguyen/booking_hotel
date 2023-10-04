@@ -7,10 +7,13 @@ import { CardDetail } from "../components/card/CardDetail";
 import ProtectedRouter from "./ProtectedRouter";
 import { Order } from "../components/order/Order";
 import Profile from "../components/user/Profile";
+import { StoreProvider } from "../context/order";
 const AuthLayout = () => {
   return (
     <AuthProvider>
-      <Outlet />
+      <StoreProvider>
+        <Outlet />
+      </StoreProvider>
     </AuthProvider>
   );
 };

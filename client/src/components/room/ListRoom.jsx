@@ -9,37 +9,15 @@ import {
 import BungalowIcon from "@mui/icons-material/Bungalow";
 import SingleBedIcon from "@mui/icons-material/SingleBed";
 import PersonIcon from "@mui/icons-material/Person";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Datepicker from "react-tailwindcss-datepicker";
 import moment from "moment";
+import { useStore, actions } from "../../context/order";
 const TABLE_HEAD = ["Loại chỗ nghỉ ", "Phù hợp cho", "Giá", ""];
-
-const TABLE_ROWS = [
-  {
-    id: 1,
-    name: "Phòng Tiêu Chuẩn Giường Đôi",
-    numberBed: "2",
-    amount: 2,
-    price: 180000,
-  },
-  {
-    id: 2,
-    name: "Phòng Tiêu Chuẩn 4 Người",
-    numberBed: "2",
-    amount: "3-4",
-    price: 300000,
-  },
-  {
-    id: 3,
-    name: "Phòng Gia Đình",
-    numberBed: "3",
-    amount: "6-7",
-    price: 600000,
-  },
-];
 
 export function ListRoom(props) {
   const rooms = props.room;
+  const [state, dispatch] = useStore();
 
   function formatPrice(price) {
     price = price.toLocaleString("vi", { style: "currency", currency: "VND" });
@@ -52,11 +30,10 @@ export function ListRoom(props) {
     setDateNow(now.format("DD/MM/YYYY"));
   }, []);
   const [dateCheckinChechout, setDateCheckinChechout] = useState({
-    startDate: new Date(),
+    startDate: "",
     endDate: new Date().setMonth(11),
   });
-  console.log("time", dateCheckinChechout);
-
+  const [selectedOption, setSelectedOption] = useState("");
   const timePresent = moment().format("HH:mm");
   const handleChangeValueDate = (e) => {
     const selectedOption = e;
@@ -70,10 +47,34 @@ export function ListRoom(props) {
       setDateCheckinChechout();
     } else {
       setDateCheckinChechout(e);
+      dispatch(actions.setDateCheckInOut(e));
     }
   };
+
+  const [quantity, setQuantity] = useState(null);
+  const [roomId, setRoomId] = useState("");
+  const handleChangeOption = (e, _id) => {
+    setQuantity(e);
+    setRoomId();
+    const orderItem = {
+      roomId: _id,
+      quantity: e,
+    };
+    console.log("aaaa", orderItem);
+
+    if (orderItem.roomId !== "" || quantity !== null) {
+      dispatch(actions.setOrderItem(orderItem));
+    }
+  };
+
   return (
     <div className="block w-3/4">
+      <div className="flex">
+        <Typography className="font-medium text-base">Chọn ngày</Typography>
+        <Typography className="ml-4 font-medium text-base text-red-600">
+          Hãy chọn 1 ngày tuyệt vời
+        </Typography>
+      </div>
       <div className=" w-full rounded-xl font-semibold border-solid border-black border-1 bg-[#003b95] h-14 flex justify-center ">
         <div className="mt-2 w-4/5">
           <Datepicker
@@ -113,7 +114,7 @@ export function ListRoom(props) {
             <tbody>
               {rooms?.map(
                 ({ _id, name, numberBed, amount, price, stock }, index) => {
-                  const isLast = index === TABLE_ROWS.length - 1;
+                  const isLast = index === rooms.length - 1;
                   const classes = isLast
                     ? "p-4"
                     : "p-4 border-b border-blue-gray-50";
@@ -134,7 +135,7 @@ export function ListRoom(props) {
                             <Typography
                               variant="small"
                               color="blue-gray"
-                              className="font-normal opacity-70 font-semibold"
+                              className="opacity-70 font-semibold"
                             >
                               {numberBed}
                               <SingleBedIcon></SingleBedIcon>Giường lớn
@@ -161,16 +162,30 @@ export function ListRoom(props) {
                             color="blue-gray"
                             className="font-normal text-lg"
                           >
-                            VND {stock === "Còn phòng" ? price : "Hết phòng"}
+                            {stock === "Còn phòng"
+                              ? formatPrice(price)
+                              : "Hết phòng"}
                           </Typography>
                         </div>
                       </td>
                       <td className={classes}>
-                        <Select variant="standard" label="Chọn phòng">
-                          <Option>1 ({formatPrice(price * 1)})</Option>
-                          <Option>2 ({formatPrice(price * 2)})</Option>
-                          <Option>3 ({formatPrice(price * 3)})</Option>
-                          <Option>4 ({formatPrice(price * 4)})</Option>
+                        <Select
+                          variant="standard"
+                          label="Chọn phòng"
+                          onChange={(e) => handleChangeOption(e, _id)}
+                        >
+                          <Option value="1">
+                            1 ({formatPrice(price * 1)})
+                          </Option>
+                          <Option value="2">
+                            2 ({formatPrice(price * 2)})
+                          </Option>
+                          <Option value="3">
+                            3 ({formatPrice(price * 3)})
+                          </Option>
+                          <Option value="4">
+                            4 ({formatPrice(price * 4)})
+                          </Option>
                         </Select>
                       </td>
                     </tr>

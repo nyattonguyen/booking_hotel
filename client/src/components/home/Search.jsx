@@ -66,11 +66,10 @@ export default function Search() {
         className="select-label bg-blue-gray-50 text-black text-shadow-white"
         onClick={handleChangeOption1}
       >
-        <Option>Material Tailwind HTML</Option>
-        <Option>Material Tailwind React</Option>
-        <Option>Material Tailwind Vue</Option>
-        <Option>Material Tailwind Angular</Option>
-        <Option>Material Tailwind Svelte</Option>
+        <Option>Vũng Tàu</Option>
+        <Option>Nha Trang</Option>
+        <Option>Đà Lạt</Option>
+        <Option>Phú Quốc</Option>
       </Select>
       <div className="bg-[#bdbdbd] w-full rounded-xl border-solid border-black border-1 ">
         <Datepicker

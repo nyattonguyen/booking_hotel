@@ -5,9 +5,14 @@ import {
   CardFooter,
   Typography,
   Button,
+  Textarea,
 } from "@material-tailwind/react";
+import { useStore } from "../../context/order";
 
 function CheckIcon() {
+  const [state, dispatch] = useStore();
+  console.log({ state });
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -85,6 +90,9 @@ export function Order() {
             </li>
           ))}
         </ul>
+        <div className="flex w-full flex-col gap-6">
+          <Textarea color="blue" label="Ghi chú" className="text-base" />
+        </div>
       </CardBody>
       <CardFooter className="mt-12 p-0 ">
         <Button

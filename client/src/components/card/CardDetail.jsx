@@ -19,7 +19,8 @@ export function CardDetail() {
   const [open, setOpen] = useState(false);
   const [hotel, setHotel] = useState({});
   const [room, setRoom] = useState([]);
-  const handleOpen = () => setOpen(!open);
+  const handleOpen = () => setOpen(true);
+
   useEffect(() => {
     clientAxios
       .get(`/hotel/${id.hotelId}`)
@@ -106,8 +107,8 @@ export function CardDetail() {
       </div>
       <Modal
         onClick={handleOpen}
-        className="flex justify-center"
         open={open}
+        className="flex justify-center"
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
