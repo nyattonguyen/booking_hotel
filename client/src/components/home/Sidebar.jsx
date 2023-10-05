@@ -40,7 +40,7 @@ export function Sidebar(props) {
       <List>
         {listArea.map((data) => {
           return (
-            <ListItem key={data.id} className="font-semibold">
+            <ListItem key={data._id} className="font-semibold">
               <ListItemPrefix>
                 <Checkbox />
               </ListItemPrefix>
@@ -57,7 +57,7 @@ export function Sidebar(props) {
       <List>
         {listCategory?.map((data) => {
           return (
-            <ListItem key={data.id} className="font-semibold">
+            <ListItem key={data._id} className="font-semibold">
               <ListItemPrefix>
                 <Checkbox />
               </ListItemPrefix>

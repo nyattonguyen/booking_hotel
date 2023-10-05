@@ -7,7 +7,7 @@ export default function ListCard(props) {
     <div className="mt-10 w-4/6 ml-10">
       <div className="grid grid-cols-3 gap-3 ">
         {listHotel?.map((item) => (
-          <ICard key={item.id} item={item} />
+          <ICard key={item._id} item={item} />
         ))}
       </div>
     </div>

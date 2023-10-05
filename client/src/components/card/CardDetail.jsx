@@ -7,9 +7,8 @@ import {
 } from "@material-tailwind/react";
 import { Carousel } from "flowbite-react";
 import { ListRoom } from "../room/ListRoom";
-import { Order } from "../order/Order";
-import { useEffect, useState } from "react";
-import { Modal } from "@mui/material";
+import { Order } from "../order/Order.1";
+import { useCallback, useEffect, useState } from "react";
 import Navbar from "../home/Navbar";
 import clientAxios from "../../api";
 import { useParams } from "react-router-dom";
@@ -21,6 +20,7 @@ export function CardDetail() {
   const [hotel, setHotel] = useState({});
   const [room, setRoom] = useState([]);
   const [isDate, setIsDate] = useState(false);
+  const [isShow, setIsShow] = useState(false);
 
   const [order, dispatch] = useStore();
   const handleOpen = () => {
@@ -29,7 +29,11 @@ export function CardDetail() {
     } else {
       setIsDate(true);
     }
+    console.log(open);
   };
+  const handleModal = useCallback(() => {
+    setIsShow(!isShow);
+  }, []);
 
   useEffect(() => {
     clientAxios
@@ -115,15 +119,8 @@ export function CardDetail() {
           </CardBody>
         </Card>
       </div>
-      <Modal
-        onClick={handleOpen}
-        open={open}
-        className="flex justify-center"
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Order />
-      </Modal>
+
+      <Order open={open} onModal={handleModal} />
       <div className="flex justify-center mt-24 overflow-hidden">
         {room?.length !== 0 ? (
           <ListRoom onDate={isDate} room={room} />

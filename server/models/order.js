@@ -23,6 +23,7 @@ const orderSchema = mongoose.Schema(
     payment: {
       type: String,
       required: true,
+      default: "Khi hoàn thành",
     },
 
     totalPrice: {

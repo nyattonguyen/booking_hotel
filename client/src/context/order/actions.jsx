@@ -1,4 +1,5 @@
 import {
+  SET_CURRENT_USERID,
   SET_DATE_CHECK_IN_OUT,
   SET_ORDER_ITEM,
   SET_ORDER_NOTE,
@@ -14,5 +15,10 @@ export const setOrderItem = (payload) => ({
 });
 export const setOrderNote = (payload) => ({
   type: SET_ORDER_NOTE,
+  payload,
+});
+
+export const setCurrentUserId = (payload) => ({
+  type: SET_CURRENT_USERID,
   payload,
 });

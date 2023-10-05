@@ -10,52 +10,17 @@ import {
 } from "@material-tailwind/react";
 import { actions, useStore } from "../../context/order";
 import { formatPrice } from "../../common/formatPrice";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { debounce } from "lodash";
 import clientAxios from "../../api/index";
 import { Modal } from "@mui/material";
+import { CheckIcon, Icon } from "./Order";
 
-export function CheckIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={2}
-      stroke="currentColor"
-      className="h-3 w-3"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M4.5 12.75l6 6 9-13.5"
-      />
-    </svg>
-  );
-}
-export function Icon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className="h-6 w-6"
-    >
-      <path
-        fillRule="evenodd"
-        d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-export function Order(props) {
-  const [listOrder, dispatch] = useStore();
-  console.log("ass", props.open);
-  const [note, setNote] = useState("");
-  const [open, setOpen] = useState(props.open);
+export function Order({ open, onModal }) {
   console.log(open);
+  const [listOrder, dispatch] = useStore();
+
+  const [note, setNote] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [idOrder, setIdOrder] = useState("");
   const debouncedDispatch = debounce((e) => {
@@ -66,7 +31,6 @@ export function Order(props) {
   const handleChaneNote = (e) => {
     debouncedDispatch(e.target.value);
   };
-  useEffect(() => {}, [open]);
 
   const totalPrice = useMemo(() => {
     return listOrder.orderItems.reduce((acc, item) => {
@@ -103,7 +67,7 @@ export function Order(props) {
     <>
       <Modal
         open={open}
-        // onClose={false}
+        onClose={onModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -195,3 +159,4 @@ export function Order(props) {
     </>
   );
 }
+export default memo(Order);

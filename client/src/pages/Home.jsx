@@ -1,13 +1,29 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ListCard from "../components/card/ListCard";
 import Header from "../components/home/Header";
 import { Sidebar } from "../components/home/Sidebar";
-import "../index.css";
 import clientAxios from "../api";
+import "../index.css";
+
+import { actions, useStore } from "../context/order";
+import { AuthContext } from "../context";
 
 export default function Home() {
   const [listCategory, setListCategory] = useState([]);
   const [listHotel, setListHotel] = useState([]);
+  const { user } = useContext(AuthContext);
+  const [currentUser, setCurrentUser] = useState(user.uid);
+  const [state, dispatch] = useStore();
+  useEffect(() => {
+    let currentUserId = user.uid;
+    setCurrentUser(user.uid);
+    return () => {
+      if (currentUserId !== currentUser) {
+        setCurrentUser(currentUser);
+      }
+      dispatch(actions.setCurrentUserId(currentUser));
+    };
+  }, [currentUser]);
 
   useEffect(() => {
     clientAxios

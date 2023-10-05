@@ -9,11 +9,12 @@ import {
 import BungalowIcon from "@mui/icons-material/Bungalow";
 import SingleBedIcon from "@mui/icons-material/SingleBed";
 import PersonIcon from "@mui/icons-material/Person";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Datepicker from "react-tailwindcss-datepicker";
 import moment from "moment";
 import { useStore, actions } from "../../context/order";
 import { formatPrice } from "../../common/formatPrice";
+import { AuthContext } from "../../context";
 const TABLE_HEAD = ["Loại chỗ nghỉ ", "Phù hợp cho", "Giá", ""];
 
 export function ListRoom(props) {
@@ -23,6 +24,8 @@ export function ListRoom(props) {
   const [dateNow, setDateNow] = useState();
   const [quantity, setQuantity] = useState(null);
   const [roomId, setRoomId] = useState("");
+  const { user } = useContext(AuthContext);
+  console.log({ user });
   useEffect(() => {
     const now = moment();
     setDateNow(now.format("DD/MM/YYYY"));
