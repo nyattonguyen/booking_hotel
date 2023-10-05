@@ -7,12 +7,11 @@ import {
   Button,
   Textarea,
 } from "@material-tailwind/react";
-import { useStore } from "../../context/order";
-
+import { actions, useStore } from "../../context/order";
+import { formatPrice } from "../../common/formatPrice";
+import { useEffect, useMemo, useState } from "react";
+import { debounce } from "lodash";
 function CheckIcon() {
-  const [state, dispatch] = useStore();
-  console.log({ state });
-
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -31,24 +30,33 @@ function CheckIcon() {
   );
 }
 
-const LIST_ORDER = [
-  {
-    id: 1,
-    name: "Phòng Tiêu Chuẩn Giường Đôi",
-    quanlity: 2,
-    price: 180000,
-  },
-  {
-    id: 2,
-    name: "Phòng Tiêu Chuẩn 4 Người",
-    quanlity: 1,
-    price: 300000,
-  },
-];
-const totalPrice = LIST_ORDER.reduce((acc, item) => {
-  return acc + item.price * item.quanlity;
-}, 0);
 export function Order() {
+  const [listOrder, dispatch] = useStore();
+  const totalPrice = useMemo(() => {
+    console.log("render lai");
+    return listOrder.orderItems.reduce((acc, item) => {
+      if (
+        !isNaN(item.quantity) ||
+        !isNaN(item.price) ||
+        item.quantity !== undefined ||
+        item.price !== undefined
+      )
+        return acc + item.price * item.quantity;
+    }, 0);
+  }, [listOrder]);
+  const [note, setNote] = useState("");
+  const debouncedDispatch = debounce((note) => {
+    dispatch(actions.setOrderNote(note));
+  }, 500);
+  const handleChaneNote = (e) => {
+    setNote(e.target.value);
+    debouncedDispatch(e.target.value);
+    console.log(e.target.value);
+    console.log({ listOrder });
+  };
+  useEffect(() => {
+    console.log(note);
+  }, [note]);
   return (
     <Card
       color="white"
@@ -71,27 +79,34 @@ export function Order() {
         <Typography
           variant="h1"
           color="black"
-          className="mt-6 flex justify-center gap-1 text-7xl font-normal"
+          className="flex justify-center gap-1 text-7xl font-norma"
         >
-          <span className="mt-2 text-4xl">VND</span>
-          {totalPrice} <span className="self-end text-4xl"></span>
+          {formatPrice(totalPrice)} <span className="self-end text-4xl"></span>
+        </Typography>
+        <Typography variant="h4" className="">
+          {listOrder.dateCheckin} - {listOrder.dateCheckout}
         </Typography>
       </CardHeader>
-      <CardBody className="p-0">
+      <CardBody className="p-0 max-h-max[600px]">
         <ul className="flex flex-col gap-4">
-          {LIST_ORDER.map((item) => (
+          {listOrder.orderItems.map((item) => (
             <li className="flex items-center gap-4">
               <span className="rounded-full border border-white/20 bg-cyan-400 mb-2 text-white p-1">
                 <CheckIcon />
               </span>
               <Typography className="font-bold">
-                {item.name}: {item.quanlity} * {item.price}
+                {item.name}: {item.quantity} * {item.price}
               </Typography>
             </li>
           ))}
         </ul>
         <div className="flex w-full flex-col gap-6">
-          <Textarea color="blue" label="Ghi chú" className="text-base" />
+          <Textarea
+            color="blue"
+            label="Ghi chú"
+            className="text-base h-auto"
+            onChange={handleChaneNote}
+          />
         </div>
       </CardBody>
       <CardFooter className="mt-12 p-0 ">

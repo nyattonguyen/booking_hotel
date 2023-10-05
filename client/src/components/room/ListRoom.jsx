@@ -9,22 +9,20 @@ import {
 import BungalowIcon from "@mui/icons-material/Bungalow";
 import SingleBedIcon from "@mui/icons-material/SingleBed";
 import PersonIcon from "@mui/icons-material/Person";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Datepicker from "react-tailwindcss-datepicker";
 import moment from "moment";
 import { useStore, actions } from "../../context/order";
+import { formatPrice } from "../../common/formatPrice";
 const TABLE_HEAD = ["Loại chỗ nghỉ ", "Phù hợp cho", "Giá", ""];
 
 export function ListRoom(props) {
   const rooms = props.room;
+  const [isActive, setIsActive] = useState(props.onDate);
   const [state, dispatch] = useStore();
-
-  function formatPrice(price) {
-    price = price.toLocaleString("vi", { style: "currency", currency: "VND" });
-    return price;
-  }
   const [dateNow, setDateNow] = useState();
-
+  const [quantity, setQuantity] = useState(null);
+  const [roomId, setRoomId] = useState("");
   useEffect(() => {
     const now = moment();
     setDateNow(now.format("DD/MM/YYYY"));
@@ -33,11 +31,11 @@ export function ListRoom(props) {
     startDate: "",
     endDate: new Date().setMonth(11),
   });
-  const [selectedOption, setSelectedOption] = useState("");
   const timePresent = moment().format("HH:mm");
   const handleChangeValueDate = (e) => {
     const selectedOption = e;
     const startDate = moment(selectedOption.startDate).format("DD/MM/YYYY");
+    setIsActive(false);
     if (startDate < dateNow) {
       alert("Ngày bắt đầu không được nhỏ hơn ngày hiện tại");
       setDateCheckinChechout("");
@@ -51,19 +49,19 @@ export function ListRoom(props) {
     }
   };
 
-  const [quantity, setQuantity] = useState(null);
-  const [roomId, setRoomId] = useState("");
   const handleChangeOption = (e, _id) => {
     setQuantity(e);
-    setRoomId();
+    setRoomId(_id);
+    const room = rooms.find((item) => item._id === _id);
     const orderItem = {
       roomId: _id,
-      quantity: e,
+      quantity: parseInt(e),
+      name: room.name,
+      price: room.price,
     };
-    console.log("aaaa", orderItem);
-
-    if (orderItem.roomId !== "" || quantity !== null) {
+    if (orderItem?.roomId !== "" || quantity !== null) {
       dispatch(actions.setOrderItem(orderItem));
+      console.log(orderItem);
     }
   };
 
@@ -72,7 +70,7 @@ export function ListRoom(props) {
       <div className="flex">
         <Typography className="font-medium text-base">Chọn ngày</Typography>
         <Typography className="ml-4 font-medium text-base text-red-600">
-          Hãy chọn 1 ngày tuyệt vời
+          {isActive ? "Hãy chọn 1 ngày tuyệt vời" : ""}
         </Typography>
       </div>
       <div className=" w-full rounded-xl font-semibold border-solid border-black border-1 bg-[#003b95] h-14 flex justify-center ">

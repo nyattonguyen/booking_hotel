@@ -13,13 +13,23 @@ import { Modal } from "@mui/material";
 import Navbar from "../home/Navbar";
 import clientAxios from "../../api";
 import { useParams } from "react-router-dom";
+import { useStore } from "../../context/order";
 
 export function CardDetail() {
   const id = useParams();
   const [open, setOpen] = useState(false);
   const [hotel, setHotel] = useState({});
   const [room, setRoom] = useState([]);
-  const handleOpen = () => setOpen(true);
+  const [isDate, setIsDate] = useState(false);
+
+  const [order, dispatch] = useStore();
+  const handleOpen = () => {
+    if (order.dateCheckin && order.dateCheckout) {
+      setOpen(true);
+    } else {
+      setIsDate(true);
+    }
+  };
 
   useEffect(() => {
     clientAxios
@@ -115,7 +125,11 @@ export function CardDetail() {
         <Order />
       </Modal>
       <div className="flex justify-center mt-24 overflow-hidden">
-        {room?.length !== 0 ? <ListRoom room={room} /> : "Loading..."}
+        {room?.length !== 0 ? (
+          <ListRoom onDate={isDate} room={room} />
+        ) : (
+          "Loading..."
+        )}
       </div>
     </>
   );

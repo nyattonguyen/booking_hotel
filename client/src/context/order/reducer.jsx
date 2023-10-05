@@ -1,4 +1,8 @@
-import { SET_DATE_CHECK_IN_OUT, SET_ORDER_ITEM } from "./Constains";
+import {
+  SET_DATE_CHECK_IN_OUT,
+  SET_ORDER_ITEM,
+  SET_ORDER_NOTE,
+} from "./Constains";
 
 export const initState = {
   orderItems: [],
@@ -22,17 +26,20 @@ export function reducer(state, action) {
       );
 
       if (orderItemIndex !== -1) {
-        state.orderItems[orderItemIndex].quantity += action.payload.quantity;
+        state.orderItems[orderItemIndex].quantity = action.payload.quantity;
       } else {
         state.orderItems.push({
           roomId: action.payload.roomId,
           quantity: action.payload.quantity,
+          name: action.payload.name,
+          price: action.payload.price,
         });
       }
-      console.log("payload", action.payload);
-
+      return state;
+    case SET_ORDER_NOTE:
       return {
         ...state,
+        note: action.payload.note,
       };
     default:
       throw new Error("Invalid action ");
