@@ -1,4 +1,6 @@
 import {
+  SET_CLEAR_ORDER,
+  SET_CURRENT_USER,
   SET_CURRENT_USERID,
   SET_DATE_CHECK_IN_OUT,
   SET_ORDER_ITEM,
@@ -20,5 +22,15 @@ export const setOrderNote = (payload) => ({
 
 export const setCurrentUserId = (payload) => ({
   type: SET_CURRENT_USERID,
+  payload,
+});
+
+export const setClearOrder = (payload) => ({
+  type: SET_CLEAR_ORDER,
+  payload,
+});
+
+export const setCurrentUser = (payload) => ({
+  type: SET_CURRENT_USER,
   payload,
 });

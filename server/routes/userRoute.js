@@ -4,22 +4,22 @@ import { isAuthenticatedUser, authorizeRoles } from "../middleware/auth.js";
 
 const userRouter = express.Router();
 
-userRouter.get("/me", isAuthenticatedUser, userController.getUserDetails);
 userRouter.put("/me/update", isAuthenticatedUser, userController.updateUser);
-
-userRouter.put(
-  "/password/update",
-  isAuthenticatedUser,
-  userController.updatePassword
-);
 userRouter.post("/change-password", userController.forgotPassword);
-userRouter.put("/password/reset/:token", userController.resetPassword);
 userRouter.get(
   "/admin/user",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   userController.getAllUser
 );
+
+userRouter.get("/me/:id", isAuthenticatedUser, userController.getUserDetails);
+userRouter.put(
+  "/password/update",
+  isAuthenticatedUser,
+  userController.updatePassword
+);
+userRouter.put("/password/reset/:token", userController.resetPassword);
 userRouter.get(
   "/admin/user/:id",
   isAuthenticatedUser,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   MDBCol,
   MDBContainer,
@@ -17,13 +17,39 @@ import {
 import { useNavigate } from "react-router-dom";
 import Navbar from "../home/Navbar";
 import { Button } from "@mui/material";
+import clientAxios from "../../api";
+import { useStore } from "../../context/order";
 
 export default function Profile() {
   const navigate = useNavigate();
-
+  const [state, dispatch] = useStore();
+  const [user, setUser] = useState({});
+  const [listOrdered, setListOrdered] = useState([]);
+  console.log({ state });
   const handleHomeClick = () => {
     navigate("/");
   };
+  useEffect(() => {
+    clientAxios
+      .get(`/user/me/${state.user}`)
+      .then((res) => {
+        setUser(res.user);
+        console.log("user", res.user);
+      })
+      .catch((err) => console.log(err));
+
+    clientAxios
+      .get(`/order/me/${state.user}`)
+      .then((res) => {
+        setListOrdered(res.orders);
+        console.log("list order", listOrdered);
+      })
+      .catch((err) => console.log(err));
+    return () => {
+      setUser();
+      setListOrdered();
+    };
+  }, []);
   return (
     <section style={{ backgroundColor: "#003b95" }}>
       <Navbar />
@@ -53,7 +79,7 @@ export default function Profile() {
                   style={{ width: "150px" }}
                   fluid
                 />
-                <p className="text-muted mb-1">Username</p>
+                <p className="text-muted mb-1">{}</p>
               </MDBCardBody>
             </MDBCard>
 
@@ -84,9 +110,7 @@ export default function Profile() {
                     <MDBCardText>Full Name</MDBCardText>
                   </MDBCol>
                   <MDBCol sm="9">
-                    <MDBCardText className="text-muted">
-                      Johnatan Smith
-                    </MDBCardText>
+                    <MDBCardText className="text-muted">{}</MDBCardText>
                   </MDBCol>
                 </MDBRow>
                 <hr />
@@ -95,34 +119,10 @@ export default function Profile() {
                     <MDBCardText>Email</MDBCardText>
                   </MDBCol>
                   <MDBCol sm="9">
-                    <MDBCardText className="text-muted">
-                      example@example.com
-                    </MDBCardText>
+                    <MDBCardText className="text-muted">{}</MDBCardText>
                   </MDBCol>
                 </MDBRow>
                 <hr />
-
-                <MDBRow>
-                  <MDBCol sm="3">
-                    <MDBCardText>Mobile</MDBCardText>
-                  </MDBCol>
-                  <MDBCol sm="9">
-                    <MDBCardText className="text-muted">
-                      (098) 765-4321
-                    </MDBCardText>
-                  </MDBCol>
-                </MDBRow>
-                <hr />
-                <MDBRow>
-                  <MDBCol sm="3">
-                    <MDBCardText>Address</MDBCardText>
-                  </MDBCol>
-                  <MDBCol sm="9">
-                    <MDBCardText className="text-muted">
-                      Bay Area, San Francisco, CA
-                    </MDBCardText>
-                  </MDBCol>
-                </MDBRow>
               </MDBCardBody>
             </MDBCard>
 
@@ -132,9 +132,8 @@ export default function Profile() {
                   <MDBCardBody>
                     <MDBCardText className="mb-4">
                       <span className="text-primary font-italic me-1">
-                        Địa điểm booking đầu tiên
+                        Địa điểm booking
                       </span>{" "}
-                      Project Status
                     </MDBCardText>
                     <MDBCardText
                       className="mb-1"

@@ -34,10 +34,12 @@ export default createBrowserRouter([
       {
         element: <CardDetail />,
         path: `/hotel/:hotelId`,
-      },
-      {
-        element: <Order />,
-        path: "/order",
+        children: [
+          {
+            element: <Order />,
+            path: "/hotel/:hotelId/order",
+          },
+        ],
       },
       {
         element: <Profile />,

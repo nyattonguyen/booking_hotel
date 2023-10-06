@@ -1,4 +1,6 @@
 import {
+  SET_CLEAR_ORDER,
+  SET_CURRENT_USER,
   SET_CURRENT_USERID,
   SET_DATE_CHECK_IN_OUT,
   SET_ORDER_ITEM,
@@ -15,6 +17,13 @@ export const initState = {
 export function reducer(state, action) {
   switch (action.type) {
     case SET_CURRENT_USERID:
+      console.log("payload", action.payload);
+
+      return {
+        ...state,
+        user: action.payload,
+      };
+    case SET_CURRENT_USER:
       console.log("payload", action.payload);
 
       return {
@@ -46,10 +55,24 @@ export function reducer(state, action) {
       return state;
     case SET_ORDER_NOTE:
       console.log("payload", action.payload);
-
       return {
         ...state,
         note: action.payload,
+      };
+    case SET_CLEAR_ORDER:
+      return {
+        orderItems: [
+          {
+            name: "",
+            price: 0,
+            quantity: 0,
+            roomId: "",
+          },
+        ],
+        user: "",
+        note: "",
+        dateCheckin: "",
+        dateCheckout: "",
       };
     default:
       throw new Error("Invalid action ");

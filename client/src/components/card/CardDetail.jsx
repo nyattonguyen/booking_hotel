@@ -7,12 +7,13 @@ import {
 } from "@material-tailwind/react";
 import { Carousel } from "flowbite-react";
 import { ListRoom } from "../room/ListRoom";
-import { Order } from "../order/Order.1";
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "../home/Navbar";
 import clientAxios from "../../api";
 import { useParams } from "react-router-dom";
 import { useStore } from "../../context/order";
+import { Order } from "../order/Order";
+import ShowerIcon from "@mui/icons-material/Shower";
 
 export function CardDetail() {
   const id = useParams();
@@ -20,21 +21,23 @@ export function CardDetail() {
   const [hotel, setHotel] = useState({});
   const [room, setRoom] = useState([]);
   const [isDate, setIsDate] = useState(false);
-  const [isShow, setIsShow] = useState(false);
+  const [isRoom, setIsRoom] = useState(false);
 
   const [order, dispatch] = useStore();
   const handleOpen = () => {
-    if (order.dateCheckin && order.dateCheckout) {
-      setOpen(true);
-    } else {
+    if (order.dateCheckin === "" || order.dateCheckout === "") {
       setIsDate(true);
+    } else {
+      if (order.orderItems.length === 0) {
+        setIsRoom(true);
+      } else {
+        setOpen(true);
+      }
     }
-    console.log(open);
   };
-  const handleModal = useCallback(() => {
-    setIsShow(!isShow);
+  const handleClose = useCallback(() => {
+    setOpen(false);
   }, []);
-
   useEffect(() => {
     clientAxios
       .get(`/hotel/${id.hotelId}`)
@@ -104,6 +107,9 @@ export function CardDetail() {
             <Typography color="gray" className="mb-8 font-normal">
               {hotel?.desc}
             </Typography>
+            <Typography variant="h5" color="blue-gray" className="mb-2">
+              Tiện ích <ShowerIcon className="ml-2" />
+            </Typography>
             <Typography color="gray" className="mb-6 font-normal">
               {hotel?.extra}
             </Typography>
@@ -118,12 +124,11 @@ export function CardDetail() {
             </div>
           </CardBody>
         </Card>
+        <Order open={open} onOpen={handleClose} />
       </div>
-
-      <Order open={open} onModal={handleModal} />
       <div className="flex justify-center mt-24 overflow-hidden">
         {room?.length !== 0 ? (
-          <ListRoom onDate={isDate} room={room} />
+          <ListRoom onDate={isDate} onCheckRoom={isRoom} room={room} />
         ) : (
           "Loading..."
         )}

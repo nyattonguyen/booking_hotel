@@ -9,23 +9,22 @@ import {
 import BungalowIcon from "@mui/icons-material/Bungalow";
 import SingleBedIcon from "@mui/icons-material/SingleBed";
 import PersonIcon from "@mui/icons-material/Person";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Datepicker from "react-tailwindcss-datepicker";
 import moment from "moment";
 import { useStore, actions } from "../../context/order";
 import { formatPrice } from "../../common/formatPrice";
-import { AuthContext } from "../../context";
 const TABLE_HEAD = ["Loại chỗ nghỉ ", "Phù hợp cho", "Giá", ""];
 
 export function ListRoom(props) {
   const rooms = props.room;
+
   const [isActive, setIsActive] = useState(props.onDate);
+  const [isActiveRoom, setIsActiveRoom] = useState(props.onCheckRoom);
   const [state, dispatch] = useStore();
   const [dateNow, setDateNow] = useState();
   const [quantity, setQuantity] = useState(null);
   const [roomId, setRoomId] = useState("");
-  const { user } = useContext(AuthContext);
-  console.log({ user });
   useEffect(() => {
     const now = moment();
     setDateNow(now.format("DD/MM/YYYY"));
@@ -34,11 +33,16 @@ export function ListRoom(props) {
     startDate: "",
     endDate: new Date().setMonth(11),
   });
+
+  useEffect(() => {
+    setIsActive(props.onDate);
+    setIsActiveRoom(props.onCheckRoom);
+  }, [props]);
+
   const timePresent = moment().format("HH:mm");
   const handleChangeValueDate = (e) => {
     const selectedOption = e;
     const startDate = moment(selectedOption.startDate).format("DD/MM/YYYY");
-    setIsActive(false);
     if (startDate < dateNow) {
       alert("Ngày bắt đầu không được nhỏ hơn ngày hiện tại");
       setDateCheckinChechout("");
@@ -47,6 +51,7 @@ export function ListRoom(props) {
       moment(startDate).add(1, "day");
       setDateCheckinChechout();
     } else {
+      setIsActive(false);
       setDateCheckinChechout(e);
       dispatch(actions.setDateCheckInOut(e));
     }
@@ -63,8 +68,8 @@ export function ListRoom(props) {
       price: room.price,
     };
     if (orderItem?.roomId !== "" || quantity !== null) {
+      setIsActiveRoom(false);
       dispatch(actions.setOrderItem(orderItem));
-      console.log(orderItem);
     }
   };
 
@@ -87,11 +92,11 @@ export function ListRoom(props) {
         </div>
       </div>
       <Card className="h-full ">
-        <CardHeader
-          floated={false}
-          shadow={false}
-          className="rounded-none"
-        ></CardHeader>
+        <CardHeader floated={false} shadow={false} className="rounded-none">
+          <Typography className="text-red-600 mt-2" variant="h5">
+            {isActiveRoom ? "Hãy chọn phòng phù hợp" : ""}
+          </Typography>
+        </CardHeader>
         <CardBody className="overflow-scroll px-0">
           <table className="mt-4 w-full min-w-max table-auto text-left">
             <thead>

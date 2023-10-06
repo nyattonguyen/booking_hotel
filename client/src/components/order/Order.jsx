@@ -10,10 +10,13 @@ import {
 } from "@material-tailwind/react";
 import { actions, useStore } from "../../context/order";
 import { formatPrice } from "../../common/formatPrice";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { debounce } from "lodash";
 import clientAxios from "../../api/index";
 import { Modal } from "@mui/material";
+import CodeIcon from "@mui/icons-material/Code";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import CloseIcon from "@mui/icons-material/Close";
 
 export function CheckIcon() {
   return (
@@ -52,12 +55,19 @@ export function Icon() {
 
 export function Order(props) {
   const [listOrder, dispatch] = useStore();
-  console.log("ass", props.open);
   const [note, setNote] = useState("");
-  const [open, setOpen] = useState(props.open);
-  console.log(open);
+  const [isShowModal, setIsShowModal] = useState(props.open);
+  console.log(listOrder);
   const [showAlert, setShowAlert] = useState(false);
   const [idOrder, setIdOrder] = useState("");
+  let amoutDate = Math.round(
+    (new Date(listOrder.dateCheckout) - new Date(listOrder.dateCheckin)) /
+      (1000 * 60 * 60 * 24)
+  );
+  useEffect(() => {
+    setIsShowModal(props.open);
+  }, [props]);
+
   const debouncedDispatch = debounce((e) => {
     setNote(e);
     dispatch(actions.setOrderNote(e));
@@ -66,8 +76,6 @@ export function Order(props) {
   const handleChaneNote = (e) => {
     debouncedDispatch(e.target.value);
   };
-  useEffect(() => {}, [open]);
-
   const totalPrice = useMemo(() => {
     return listOrder.orderItems.reduce((acc, item) => {
       if (
@@ -76,13 +84,11 @@ export function Order(props) {
         item.quantity !== undefined ||
         item.price !== undefined
       )
-        return acc + item.price * item.quantity;
+        return acc + item.price * item.quantity * amoutDate;
     }, 0);
-  }, [listOrder.quantity, listOrder.price]);
+  }, [listOrder.orderItems, amoutDate]);
 
   const handleSubmit = () => {
-    console.log("co du chua", listOrder);
-
     const allowSubmit = listOrder;
 
     if (allowSubmit) {
@@ -91,6 +97,8 @@ export function Order(props) {
         .then((res) => {
           setIdOrder(res.data.newOrder._id);
           setShowAlert(true);
+          dispatch(actions.setClearOrder());
+          handleCloseModal();
         })
         .catch((err) => console.log(err));
     } else {
@@ -99,11 +107,15 @@ export function Order(props) {
       );
     }
   };
+  const handleCloseModal = (onOpen) => {
+    return typeof onOpen === "function";
+  };
+  console.log("render lai", listOrder);
   return (
     <>
       <Modal
-        open={open}
-        // onClose={false}
+        open={isShowModal}
+        className="flex justify-center"
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -111,19 +123,42 @@ export function Order(props) {
           id="modal-modal-title"
           color="white"
           variant="gradient"
-          className="w-full max-w-[30rem] h-auto max-h-[600px] p-8 bg-blue-gray-50 mt-5"
+          className="w-full max-w-[30rem] h-auto max-h-[800px] p-8 bg-blue-gray-50 mt-3"
         >
+          <CloseIcon
+            color="primary"
+            className="mb-2 cursor-pointer float-right hover:text-cyan-400"
+            onClick={props.onOpen}
+          />
+          {showAlert ? (
+            <Alert
+              open={true}
+              className="absolute max-w-screen-md bg-blue-700 h-28 z-10"
+              icon={<Icon />}
+              onClose={() => setShowAlert(false)}
+            >
+              <Typography variant="h5" color="white">
+                Booking thành công
+              </Typography>
+              <Typography color="white" className="mt-2 font-normal">
+                Đơn hàng {idOrder}
+              </Typography>
+            </Alert>
+          ) : (
+            ""
+          )}
           <CardHeader
             floated={false}
             shadow={false}
             color="transparent"
-            className="m-0 mb-8 rounded-s-2xl border-b border-white/10 pb-8 text-center"
+            className="m-0 mb- rounded-s-2xl border-b border-white/10 pb-8 text-center"
           >
             <Typography
               variant="small"
-              color="black"
-              className="font-normal uppercase text-lg"
+              color="light-blue"
+              className="font-medium uppercase text-lg "
             >
+              <AttachMoneyIcon className="mb-1" />
               Bill
             </Typography>
             <Typography
@@ -134,12 +169,19 @@ export function Order(props) {
               {formatPrice(totalPrice)}{" "}
               <span className="self-end text-4xl"></span>
             </Typography>
+            <div className="flex mt-3 h-10 justify-center">
+              <Typography variant="h4" className="">
+                {listOrder.dateCheckin}
+                <CodeIcon color="primary" />
+                {listOrder.dateCheckout}
+              </Typography>
+            </div>
             <Typography variant="h4" className="">
-              {listOrder.dateCheckin} - {listOrder.dateCheckout}
+              {amoutDate} ngày {amoutDate + 1} đêm
             </Typography>
           </CardHeader>
           <CardBody
-            className="p-0 max-h-max[600px]"
+            className="p-0 max-h-max[600px]  overflow-y: scroll"
             id="modal-modal-description"
           >
             <ul className="flex flex-col gap-4">
@@ -149,7 +191,7 @@ export function Order(props) {
                     <CheckIcon />
                   </span>
                   <Typography className="font-bold">
-                    {item.name}: {item.quantity} * {item.price}
+                    {item.name}: {item.quantity} * {formatPrice(item.price)}
                   </Typography>
                 </li>
               ))}
@@ -158,7 +200,7 @@ export function Order(props) {
               <Textarea
                 color="blue"
                 label="Ghi chú"
-                className="text-base h-auto"
+                className="text-base h-auto border-[2px] "
                 onChange={handleChaneNote}
               />
             </div>
@@ -177,21 +219,7 @@ export function Order(props) {
           </CardFooter>
         </Card>
       </Modal>
-      {showAlert && (
-        <Alert
-          open={true}
-          className="max-w-screen-md bg-blue-700 h-28"
-          icon={<Icon />}
-          onClose={() => setShowAlert(false)}
-        >
-          <Typography variant="h5" color="white">
-            Booking thành công
-          </Typography>
-          <Typography color="white" className="mt-2 font-normal">
-            Đơn hàng {idOrder}
-          </Typography>
-        </Alert>
-      )}
     </>
   );
 }
+export default memo(Order);

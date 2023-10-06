@@ -47,7 +47,6 @@ export const loginWithGoogle = catchAsyncError(async (req, res, _next) => {
 
   if (!user) {
     const user = new UserModel({
-      id: req.body.uid,
       username: req.body.displayName,
       email: req.body.email,
     });

@@ -59,7 +59,9 @@ export const getOneOrder = catchAsyncError(async (req, res, next) => {
   });
 });
 export const myOrders = catchAsyncError(async (req, res, _next) => {
-  const orders = await OrderModel.find({ user: req.params.id });
+  const orders = await OrderModel.find({ user: req.params.id }).sort({
+    timestamp: -1,
+  });
   res.status(200).json({
     message: "get my orders successfully",
     orders,

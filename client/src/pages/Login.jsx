@@ -9,12 +9,14 @@ import {
   MDBCheckbox,
 } from "mdb-react-ui-kit";
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
-import { AuthContext } from "../context";
 import { Link, useNavigate } from "react-router-dom";
 import clientAxios from "../api/index";
+import { actions, useStore } from "../context/order";
+
 export default function Login() {
   const auth = getAuth();
-  const { user } = useContext(AuthContext);
+  const [state, dispatch] = useStore();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -27,19 +29,18 @@ export default function Login() {
     } = await signInWithPopup(auth, provider);
 
     const response = await clientAxios.post("/auth/login-gg", {
-      uid,
       displayName,
       photoURL,
       email,
     });
 
     if (response.status === 200) {
+      localStorage.setItem("userId", response.data.res._id);
+      dispatch(actions.setCurrentUserId(response.data.res._id));
       navigate("/");
     } else {
       navigate("/login");
     }
-
-    // console.log(response.data.message);
   };
 
   ///\\\///
@@ -54,7 +55,6 @@ export default function Login() {
         password,
       })
       .then((data) => {
-        console.log(data);
         localStorage.setItem("accessToken", data.token);
         navigate("/");
       })

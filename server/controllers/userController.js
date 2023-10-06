@@ -29,7 +29,7 @@ export const getOneUser = catchAsyncError(async (req, res, _next) => {
 });
 
 export const getUserDetails = catchAsyncError(async (req, res, next) => {
-  const user = await UserModel.findById(req.user.id);
+  const user = await UserModel.findById(req.params.id);
   if (!user) {
     return next(new ErrorHandler("User not found or not logged in", 404));
   }

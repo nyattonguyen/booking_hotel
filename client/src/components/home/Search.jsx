@@ -1,4 +1,4 @@
-import { Select, Option, Input, Button } from "@material-tailwind/react";
+import { Select, Option, Button } from "@material-tailwind/react";
 import { useEffect, useRef, useState } from "react";
 import moment from "moment";
 import Datepicker from "react-tailwindcss-datepicker";
@@ -61,9 +61,9 @@ export default function Search() {
   return (
     <div className="flex w-auto mr-72 ml-72 flex-row gap-6 justify-center text-black">
       <Select
-        color="white"
+        color="blue"
         label={isActive1 ? "Chọn địa điểm đến" : ""}
-        className="select-label bg-blue-gray-50 text-black text-shadow-white"
+        className="select-label bg-blue-gray-50 text-black "
         onClick={handleChangeOption1}
       >
         <Option>Vũng Tàu</Option>
@@ -71,7 +71,7 @@ export default function Search() {
         <Option>Đà Lạt</Option>
         <Option>Phú Quốc</Option>
       </Select>
-      <div className="bg-[#bdbdbd] w-full rounded-xl border-solid border-black border-1 ">
+      <div className=" w-full rounded-xl border-solid border-black ">
         <Datepicker
           primaryColor={"rose"}
           value={dateCheckinChechout}
@@ -83,7 +83,7 @@ export default function Search() {
         label={isActive2 ? "Chọn phòng" : ""}
         ref={selectedOptionRefRoom}
         onClick={handleChangeOption2}
-        className="select-label bg-blue-gray-50 text-black text-shadow-white"
+        className="select-label bg-blue-gray-50 text-black"
       >
         <Option value="1">1</Option>
         <Option value="2">2</Option>
