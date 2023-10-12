@@ -14,7 +14,11 @@ const orderSchema = mongoose.Schema(
         },
       },
     ],
-
+    hotel: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Hotel",
+      require: true,
+    },
     status: {
       type: String,
       require: true,
@@ -40,6 +44,7 @@ const orderSchema = mongoose.Schema(
       ref: "User",
       require: true,
     },
+
     dateCheckin: {
       type: Date,
       require: true,

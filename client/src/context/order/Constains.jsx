@@ -4,3 +4,4 @@ export const SET_ORDER_NOTE = "set_order_note";
 export const SET_CURRENT_USERID = "set_current_userid";
 export const SET_CLEAR_ORDER = "set_clear_order";
 export const SET_CURRENT_USER = "set_current_user";
+export const SET_ID_HOTEL = "set_id_hotel";

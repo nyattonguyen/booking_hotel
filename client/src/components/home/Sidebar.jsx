@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import {
   Card,
   Typography,
@@ -15,20 +15,7 @@ export function Sidebar(props) {
   const listCategory = props.listCategory;
   const [open, setOpen] = useState(0);
   const [openAlert, setOpenAlert] = useState(true);
-  const listArea = [
-    {
-      id: 1,
-      title: "Vũng Tàu",
-    },
-    {
-      id: 2,
-      title: "Đà Lạt",
-    },
-    {
-      id: 3,
-      title: "Nha Trang",
-    },
-  ];
+  let listArea = props.listArea;
 
   return (
     <Card className="h-auto max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/30 mt-10 w-2/6 bg-gray-50">
@@ -42,7 +29,7 @@ export function Sidebar(props) {
           return (
             <ListItem key={data.id} className="font-semibold">
               <ListItemPrefix>
-                <Checkbox />
+                <Checkbox value={data.id} onChange={props.onCheckboxChange} />
               </ListItemPrefix>
               {data.title}
             </ListItem>
@@ -59,7 +46,7 @@ export function Sidebar(props) {
           return (
             <ListItem key={data._id} className="font-semibold">
               <ListItemPrefix>
-                <Checkbox />
+                <Checkbox value={data._id} onChange={props.onFilterCategory} />
               </ListItemPrefix>
               {data.title}
             </ListItem>

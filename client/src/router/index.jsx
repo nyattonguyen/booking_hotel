@@ -43,7 +43,7 @@ export default createBrowserRouter([
       },
       {
         element: <Profile />,
-        path: "/profile/iduser",
+        path: "/profile/me",
       },
     ],
   },

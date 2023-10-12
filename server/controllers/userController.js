@@ -14,6 +14,15 @@ export const getAllUser = catchAsyncError(async (_req, res, _next) => {
     message: "get all users successfully",
   });
 });
+export const getCountAllUser = catchAsyncError(async (_req, res, _next) => {
+  const countuser = await UserModel.count();
+
+  res.status(200).json({
+    countuser,
+    success: true,
+    message: "get count all users successfully",
+  });
+});
 export const getOneUser = catchAsyncError(async (req, res, _next) => {
   const user = await UserModel.findById(req.params.id);
 

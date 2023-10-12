@@ -32,7 +32,7 @@ export default function Navbar() {
     navigate("/login");
   };
   const onProfile = () => {
-    navigate("/profile/iduser");
+    navigate("/profile/me");
   };
   return (
     <Disclosure as="nav" className="bg-black">

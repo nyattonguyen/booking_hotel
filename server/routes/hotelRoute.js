@@ -5,6 +5,8 @@ import { isAuthenticatedUser, authorizeRoles } from "../middleware/auth.js";
 const hotelRoute = express.Router();
 
 hotelRoute.get("/", hotelController.getAllHotel);
+hotelRoute.get("/count-hotel", hotelController.getCountHotel);
+
 hotelRoute.get(
   "/all",
   isAuthenticatedUser,

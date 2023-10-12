@@ -3,6 +3,7 @@ import {
   SET_CURRENT_USER,
   SET_CURRENT_USERID,
   SET_DATE_CHECK_IN_OUT,
+  SET_ID_HOTEL,
   SET_ORDER_ITEM,
   SET_ORDER_NOTE,
 } from "./Constains";
@@ -13,6 +14,10 @@ export const setDateCheckInOut = (payload) => ({
 });
 export const setOrderItem = (payload) => ({
   type: SET_ORDER_ITEM,
+  payload,
+});
+export const setIdHotel = (payload) => ({
+  type: SET_ID_HOTEL,
   payload,
 });
 export const setOrderNote = (payload) => ({

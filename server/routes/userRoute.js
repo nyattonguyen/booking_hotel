@@ -5,9 +5,17 @@ import { isAuthenticatedUser, authorizeRoles } from "../middleware/auth.js";
 const userRouter = express.Router();
 
 userRouter.put("/me/update", isAuthenticatedUser, userController.updateUser);
+userRouter.get(
+  "/count-user",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+
+  userController.getCountAllUser
+);
+
 userRouter.post("/change-password", userController.forgotPassword);
 userRouter.get(
-  "/admin/user",
+  "/admin/countuser",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   userController.getAllUser
@@ -27,7 +35,7 @@ userRouter.get(
   userController.getOneUser
 );
 
-userRouter.put(
+userRouter.patch(
   "/admin/user/updatestatus/:id",
   isAuthenticatedUser,
   authorizeRoles("admin"),

@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from "react";
 import Navbar from "../home/Navbar";
 import clientAxios from "../../api";
 import { useParams } from "react-router-dom";
-import { useStore } from "../../context/order";
+import { actions, useStore } from "../../context/order";
 import { Order } from "../order/Order";
 import ShowerIcon from "@mui/icons-material/Shower";
 
@@ -32,6 +32,7 @@ export function CardDetail() {
         setIsRoom(true);
       } else {
         setOpen(true);
+        dispatch(actions.setIdHotel(id));
       }
     }
   };

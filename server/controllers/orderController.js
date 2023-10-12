@@ -4,15 +4,21 @@ import { OrderModel, RoomModel } from "../models/index.js";
 import ErrorHandler from "../utills/errorHandle.js";
 import moment from "moment/moment.js";
 export const createOrder = catchAsyncError(async (req, res, next) => {
-  const { orderItems, status, payment, note, dateCheckin, dateCheckout } =
-    req.body;
+  const {
+    orderItems,
+    status,
+    payment,
+    note,
+    dateCheckin,
+    dateCheckout,
+    hotel,
+  } = req.body;
 
   const dateCheckoutFM = moment(dateCheckout);
   const dateCheckinFM = moment(dateCheckin);
   let totalDays = 0;
   if (dateCheckinFM.isValid() && dateCheckoutFM.isValid()) {
     totalDays = dateCheckoutFM.diff(dateCheckinFM, "days");
-    console.log(totalDays);
   }
   let totalPrice = 0;
   for (const orderItem of orderItems) {
@@ -27,6 +33,7 @@ export const createOrder = catchAsyncError(async (req, res, next) => {
     payment,
     totalPrice,
     note,
+    hotel,
     dateCheckin: dateCheckinFM,
     dateCheckout: dateCheckoutFM,
     user: req.user._id,
@@ -58,10 +65,12 @@ export const getOneOrder = catchAsyncError(async (req, res, next) => {
     order,
   });
 });
+
 export const myOrders = catchAsyncError(async (req, res, _next) => {
-  const orders = await OrderModel.find({ user: req.params.id }).sort({
-    timestamp: -1,
-  });
+  const orders = await OrderModel.find({ user: req.params.id }).populate(
+    "hotel"
+  );
+
   res.status(200).json({
     message: "get my orders successfully",
     orders,
@@ -143,6 +152,94 @@ export const calculateMonthlyRevenue = catchAsyncError(
   }
 );
 
+export const calculateMonthlyRevenueByHotelId = catchAsyncError(
+  async (req, res, next) => {
+    const { hotelId } = req.params;
+
+    const pipeline = [
+      {
+        $match: {
+          hotel: hotelId,
+          status: "Successed",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: "%Y-%m",
+              date: { $toDate: "$createdAt" },
+            },
+          },
+          revenue: {
+            $sum: {
+              $toDouble: {
+                $ifNull: [{ $toDouble: "$totalPrice" }, 0],
+              },
+            },
+          },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ];
+
+    const monthlyRevenue = await OrderModel.aggregate(pipeline);
+
+    res.status(200).json({
+      success: true,
+      monthlyRevenue,
+    });
+  }
+);
+
+export const calculateWeeklyRevenueByHotel = catchAsyncError(
+  async (req, res, next) => {
+    const pipeline = [
+      {
+        $match: {
+          status: "Successed",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: "%Y-%u", // Thay đổi định dạng ngày tháng thành %Y-%W
+              date: { $toDate: "$createdAt" },
+            },
+          },
+          revenue: {
+            $sum: {
+              $toDouble: {
+                $ifNull: [{ $toDouble: "$totalPrice" }, 0],
+              },
+            },
+          },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ];
+
+    const weeklyRevenue = await OrderModel.aggregate(pipeline);
+    const currentWeek = moment().week();
+    const weeklyRevenueByHotel = weeklyRevenue.find(
+      (item) => item._id === currentWeek
+    );
+
+    res.status(200).json({
+      success: true,
+      weeklyRevenueByHotel,
+    });
+  }
+);
 export const calculateWeeklyRevenue = catchAsyncError(
   async (req, res, next) => {
     const pipeline = [
@@ -253,3 +350,53 @@ export const calculateDaylyRevenue = catchAsyncError(async (req, res, next) => {
     monthlyRevenue,
   });
 });
+// const calculateDaylyRevenueByHotelId = catchAsyncError(
+//   async (req, res, next) => {
+//     const { date, hotelId } = req.params;
+
+//     const currentDate = new Date();
+//     const currentMonth = moment(currentDate).format("YYYY-MM");
+
+//     const pipeline = [
+//       {
+//         $match: {
+//           status: "Successed",
+//           hotel: hotelId,
+//           createdAt: {
+//             $gte: new Date(date),
+//             $lt: new Date(date + " 23:59:59"),
+//           },
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             $dateToString: {
+//               format: "%Y-%m-%d",
+//               date: { $toDate: "$createdAt" },
+//             },
+//           },
+//           revenue: {
+//             $sum: {
+//               $toDouble: {
+//                 $ifNull: [{ $toDouble: "$totalPrice" }, 0],
+//               },
+//             },
+//           },
+//         },
+//       },
+//       {
+//         $sort: {
+//           _id: 1,
+//         },
+//       },
+//     ];
+
+//     const dailyRevenue = await OrderModel.aggregate(pipeline);
+
+//     res.status(200).json({
+//       success: true,
+//       dailyRevenue,
+//     });
+//   }
+// );

@@ -11,6 +11,14 @@ export const getAllHotel = catchAsyncError(async (req, res, next) => {
     success: true,
   });
 });
+export const getCountHotel = catchAsyncError(async (req, res, next) => {
+  const counthotel = await HotelModel.count();
+  res.status(200).json({
+    counthotel,
+    message: "get hotel successfully",
+    success: true,
+  });
+});
 export const getAllHotelMain = catchAsyncError(async (req, res, next) => {
   const hotel = await HotelModel.find().sort();
   const hotelCount = await HotelModel.count();
@@ -27,7 +35,6 @@ export const createHotel = catchAsyncError(async (req, res, next) => {
   const userId = req.body.userId;
   const user = await UserModel.findById(userId);
   if (!user) return next(new ErrorHandler("Not found user...", 404));
-  console.log(user);
   const categoryId = req.body.categoryId;
   const category = await CategoryModel.findById(categoryId);
   if (!category) return next(new ErrorHandler("Not found category...", 404));
@@ -41,6 +48,7 @@ export const createHotel = catchAsyncError(async (req, res, next) => {
       image: hotel.image,
       address: hotel.address,
       rate: hotel.rate,
+      extra: hotel.extra,
       user: user._id,
       categoryId: category._id,
     }).save();

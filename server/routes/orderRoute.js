@@ -28,6 +28,18 @@ orderRoute.post(
   authorizeRoles("admin"),
   orderController.calculateDaylyRevenue
 );
+orderRoute.get(
+  "/month/caltulate/:id",
+  isAuthenticatedUser,
+  orderController.calculateMonthlyRevenueByHotelId
+);
+
+orderRoute.get(
+  "/week/caltulate/:id",
+  isAuthenticatedUser,
+  orderController.calculateWeeklyRevenueByHotel
+);
+
 orderRoute.get("/me/:id", isAuthenticatedUser, orderController.myOrders);
 orderRoute.get("/:id", isAuthenticatedUser, orderController.getOneOrder);
 orderRoute.get(

@@ -57,25 +57,14 @@ export function Order(props) {
   const [listOrder, dispatch] = useStore();
   const [note, setNote] = useState("");
   const [isShowModal, setIsShowModal] = useState(props.open);
-  console.log(listOrder);
+  const [prevIsShowModal, setPrevIsShowModal] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [idOrder, setIdOrder] = useState("");
   let amoutDate = Math.round(
     (new Date(listOrder.dateCheckout) - new Date(listOrder.dateCheckin)) /
       (1000 * 60 * 60 * 24)
   );
-  useEffect(() => {
-    setIsShowModal(props.open);
-  }, [props]);
 
-  const debouncedDispatch = debounce((e) => {
-    setNote(e);
-    dispatch(actions.setOrderNote(e));
-  }, 800);
-
-  const handleChaneNote = (e) => {
-    debouncedDispatch(e.target.value);
-  };
   const totalPrice = useMemo(() => {
     return listOrder.orderItems.reduce((acc, item) => {
       if (
@@ -88,9 +77,32 @@ export function Order(props) {
     }, 0);
   }, [listOrder.orderItems, amoutDate]);
 
-  const handleSubmit = () => {
-    const allowSubmit = listOrder;
+  const allowSubmit = useMemo(() => {
+    return listOrder;
+  }, [listOrder]);
 
+  const debouncedDispatch = useMemo(() => {
+    return debounce((e) => {
+      setNote(e);
+      dispatch(actions.setOrderNote(e));
+    }, 800);
+  }, []);
+
+  useEffect(() => {
+    setPrevIsShowModal(isShowModal);
+  }, [props.open]);
+
+  useEffect(() => {
+    if (isShowModal !== prevIsShowModal) {
+      setIsShowModal(isShowModal);
+    }
+  }, [isShowModal, prevIsShowModal]);
+
+  const handleChaneNote = (e) => {
+    debouncedDispatch(e.target.value);
+  };
+
+  const handleSubmit = () => {
     if (allowSubmit) {
       clientAxios
         .post("/order", listOrder)
@@ -107,10 +119,13 @@ export function Order(props) {
       );
     }
   };
+
   const handleCloseModal = (onOpen) => {
     return typeof onOpen === "function";
   };
+
   console.log("render lai", listOrder);
+
   return (
     <>
       <Modal

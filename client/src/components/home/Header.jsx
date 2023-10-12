@@ -1,6 +1,5 @@
 import React from "react";
 import Navbar from "./Navbar";
-import Search from "./Search";
 
 export default function Header() {
   return (
@@ -11,9 +10,6 @@ export default function Header() {
         <h4 className="mb-3">
           Tìm ưu đãi khách sạn, chỗ nghỉ dạng nhà và nhiều hơn nữa...
         </h4>
-      </div>
-      <div className="w-full h-auto mt-3">
-        <Search />
       </div>
     </header>
   );

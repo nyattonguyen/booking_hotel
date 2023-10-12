@@ -3,12 +3,14 @@ import {
   SET_CURRENT_USER,
   SET_CURRENT_USERID,
   SET_DATE_CHECK_IN_OUT,
+  SET_ID_HOTEL,
   SET_ORDER_ITEM,
   SET_ORDER_NOTE,
 } from "./Constains";
 
 export const initState = {
   orderItems: [],
+  hotel: "",
   user: "",
   note: "",
   dateCheckin: "",
@@ -29,6 +31,13 @@ export function reducer(state, action) {
       return {
         ...state,
         user: action.payload,
+      };
+    case SET_ID_HOTEL:
+      console.log("payload", action.payload);
+
+      return {
+        ...state,
+        hotel: action.payload,
       };
     case SET_DATE_CHECK_IN_OUT:
       console.log("payload", action.payload);
@@ -69,7 +78,6 @@ export function reducer(state, action) {
             roomId: "",
           },
         ],
-        user: "",
         note: "",
         dateCheckin: "",
         dateCheckout: "",

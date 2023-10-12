@@ -36,7 +36,6 @@ export default function Login() {
 
     if (response.status === 200) {
       localStorage.setItem("userId", response.data.res._id);
-      dispatch(actions.setCurrentUserId(response.data.res._id));
       navigate("/");
     } else {
       navigate("/login");
@@ -54,8 +53,9 @@ export default function Login() {
         email,
         password,
       })
-      .then((data) => {
-        localStorage.setItem("accessToken", data.token);
+      .then((res) => {
+        localStorage.setItem("userId", res.data.user._id);
+        localStorage.setItem("accessToken", res.data.token);
         navigate("/");
       })
       .catch((err) => {

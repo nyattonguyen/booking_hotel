@@ -19,37 +19,38 @@ import Navbar from "../home/Navbar";
 import { Button } from "@mui/material";
 import clientAxios from "../../api";
 import { useStore } from "../../context/order";
+import moment from "moment";
 
 export default function Profile() {
   const navigate = useNavigate();
   const [state, dispatch] = useStore();
   const [user, setUser] = useState({});
   const [listOrdered, setListOrdered] = useState([]);
-  console.log({ state });
+  console.log(listOrdered);
+
   const handleHomeClick = () => {
     navigate("/");
   };
+  const idUser = state.user;
   useEffect(() => {
     clientAxios
-      .get(`/user/me/${state.user}`)
+      .get(`/user/me/${idUser}`)
       .then((res) => {
-        setUser(res.user);
-        console.log("user", res.user);
+        setUser(res.data.user);
       })
       .catch((err) => console.log(err));
 
     clientAxios
-      .get(`/order/me/${state.user}`)
+      .get(`/order/me/${idUser}`)
       .then((res) => {
-        setListOrdered(res.orders);
-        console.log("list order", listOrdered);
+        setListOrdered(res.data.orders);
       })
       .catch((err) => console.log(err));
     return () => {
       setUser();
       setListOrdered();
     };
-  }, []);
+  }, [idUser]);
   return (
     <section style={{ backgroundColor: "#003b95" }}>
       <Navbar />
@@ -73,13 +74,13 @@ export default function Profile() {
             <MDBCard className="mb-4">
               <MDBCardBody className="text-center">
                 <MDBCardImage
-                  src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+                  src="https://images.pexels.com/photos/981588/pexels-photo-981588.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                   alt="avatar"
                   className="rounded-circle"
                   style={{ width: "150px" }}
                   fluid
                 />
-                <p className="text-muted mb-1">{}</p>
+                <p className="text-muted mb-1">{user?.username}</p>
               </MDBCardBody>
             </MDBCard>
 
@@ -107,10 +108,12 @@ export default function Profile() {
               <MDBCardBody>
                 <MDBRow>
                   <MDBCol sm="3">
-                    <MDBCardText>Full Name</MDBCardText>
+                    <MDBCardText>User Name</MDBCardText>
                   </MDBCol>
                   <MDBCol sm="9">
-                    <MDBCardText className="text-muted">{}</MDBCardText>
+                    <MDBCardText className="text-muted">
+                      {user?.username}
+                    </MDBCardText>
                   </MDBCol>
                 </MDBRow>
                 <hr />
@@ -119,7 +122,9 @@ export default function Profile() {
                     <MDBCardText>Email</MDBCardText>
                   </MDBCol>
                   <MDBCol sm="9">
-                    <MDBCardText className="text-muted">{}</MDBCardText>
+                    <MDBCardText className="text-muted">
+                      {user?.email}
+                    </MDBCardText>
                   </MDBCol>
                 </MDBRow>
                 <hr />
@@ -127,54 +132,59 @@ export default function Profile() {
             </MDBCard>
 
             <MDBRow>
-              <MDBCol md="6">
-                <MDBCard className="mb-4 mb-md-0">
-                  <MDBCardBody>
-                    <MDBCardText className="mb-4">
-                      <span className="text-primary font-italic me-1">
-                        Địa điểm booking
-                      </span>{" "}
-                    </MDBCardText>
-                    <MDBCardText
-                      className="mb-1"
-                      style={{ fontSize: ".77rem" }}
-                    >
-                      Web Design
-                    </MDBCardText>
-                    <MDBProgress className="rounded">
-                      <MDBProgressBar width={80} valuemin={0} valuemax={100} />
-                    </MDBProgress>
+              {listOrdered?.map((order) => (
+                <MDBCol md="6">
+                  <MDBCard className="mb-4 mb-md-0" key={order._id}>
+                    <MDBCardBody>
+                      <MDBCardText className="mb-4">
+                        <span className="text-primary font-italic me-1">
+                          Địa điểm booking
+                        </span>{" "}
+                      </MDBCardText>
+                      <MDBCardText
+                        className="mb-1"
+                        style={{ fontSize: ".77rem" }}
+                      >
+                        {order.hotel.name}
+                      </MDBCardText>
+                      <MDBProgress className="rounded">
+                        <MDBProgressBar
+                          width={80}
+                          valuemin={0}
+                          valuemax={100}
+                        />
+                      </MDBProgress>
 
-                    <MDBCardText
-                      className="mt-4 mb-1"
-                      style={{ fontSize: ".77rem" }}
-                    >
-                      Website Markup
-                    </MDBCardText>
+                      <MDBCardText
+                        className="mt-4 mb-1"
+                        style={{ fontSize: ".77rem" }}
+                      >
+                        {order.hotel.address}
+                      </MDBCardText>
 
-                    <MDBCardText
-                      className="mt-4 mb-1"
-                      style={{ fontSize: ".77rem" }}
-                    >
-                      One Page
-                    </MDBCardText>
+                      <MDBCardText
+                        className="mt-4 mb-1"
+                        style={{ fontSize: ".77rem" }}
+                      >
+                        {" "}
+                        Thời gian:{" "}
+                        {moment(order.dateCheckin).format("DD/MM/YYYY")} -{" "}
+                        {moment(order.dateCheckout).format("DD/MM/YYYY")}
+                      </MDBCardText>
 
-                    <MDBCardText
-                      className="mt-4 mb-1"
-                      style={{ fontSize: ".77rem" }}
-                    >
-                      Mobile Template
-                    </MDBCardText>
+                      <MDBCardText
+                        className="mt-4 mb-1"
+                        style={{ fontSize: ".77rem" }}
+                      ></MDBCardText>
 
-                    <MDBCardText
-                      className="mt-4 mb-1"
-                      style={{ fontSize: ".77rem" }}
-                    >
-                      Backend API
-                    </MDBCardText>
-                  </MDBCardBody>
-                </MDBCard>
-              </MDBCol>
+                      <MDBCardText
+                        className="mt-4 mb-1"
+                        style={{ fontSize: ".77rem" }}
+                      ></MDBCardText>
+                    </MDBCardBody>
+                  </MDBCard>
+                </MDBCol>
+              ))}
             </MDBRow>
           </MDBCol>
         </MDBRow>
