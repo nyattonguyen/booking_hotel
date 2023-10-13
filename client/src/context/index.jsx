@@ -10,7 +10,8 @@ export default function AuthProvider({ children }) {
   const [user, setUser] = useState({});
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  let idCurrentUser = localStorage.getItem("userId");
+  let idCurrentUser = sessionStorage.getItem("userId");
+  console.log("id uẻ", idCurrentUser);
   const auth = getAuth();
   useEffect(() => {
     const unsubcribed = auth.onIdTokenChanged((user) => {
@@ -24,9 +25,12 @@ export default function AuthProvider({ children }) {
           clientAxios
             .get(`/user/me/${idCurrentUser}`)
             .then((res) => {
-              const user = res.data.user;
-              if (user != null && user?._id) {
+              let user = res.data.user;
+              console.log(user);
+              if (user != null) {
                 setUser(user);
+                console.log("co ne ing");
+                navigate("/");
               }
             })
             .catch((err) => console.log(err));

@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import catchAsyncError from "../middleware/catchAsyncErrors.js";
 import { OrderModel, RoomModel } from "../models/index.js";
 import ErrorHandler from "../utills/errorHandle.js";
@@ -52,6 +51,7 @@ export const getAllOrder = catchAsyncError(async (req, res, next) => {
     orders,
   });
 });
+
 export const getOneOrder = catchAsyncError(async (req, res, next) => {
   const order = await OrderModel.findById(req.params.id).populate(
     "user",
@@ -66,6 +66,25 @@ export const getOneOrder = catchAsyncError(async (req, res, next) => {
   });
 });
 
+export const getLatestTwoOrdersByUserId2 = catchAsyncError(
+  async (req, res, next) => {
+    const { id } = req.params;
+    console.log(id);
+
+    // const orders = await OrderModel.find({ user: req.params.id })
+    //   .sort({ createdAt: -1 })
+    //   .limit(2);
+    // res.status(200).json({
+    //   message: "Get two latest order successfully...",
+    //   orders,
+    // });
+  }
+);
+export const getLatestTwoOrdersByUserId = catchAsyncError(
+  async (req, res, next) => {
+    console.log("aaa");
+  }
+);
 export const myOrders = catchAsyncError(async (req, res, _next) => {
   const orders = await OrderModel.find({ user: req.params.id }).populate(
     "hotel"
@@ -282,14 +301,15 @@ export const calculateWeeklyRevenue = catchAsyncError(
 );
 
 export const calculateDaylyRevenue = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
   const { date } = req.body;
 
   const currentDate = new Date();
   const currentMonth = moment(currentDate).format("YYYY-MM");
-
   const pipeline = [
     {
       $match: {
+        hotel: id,
         status: "Successed",
         createdAt: {
           $gte: new Date(date),
@@ -319,21 +339,21 @@ export const calculateDaylyRevenue = catchAsyncError(async (req, res, next) => {
         _id: 1,
       },
     },
-    {
-      $lookup: {
-        from: "days",
-        localField: "_id",
-        foreignField: "date",
-        as: "days",
-        pipeline: [
-          {
-            $match: {
-              month: currentMonth,
-            },
-          },
-        ],
-      },
-    },
+    // {
+    //   $lookup: {
+    //     from: "days",
+    //     localField: "_id",
+    //     foreignField: "date",
+    //     as: "days",
+    //     pipeline: [
+    //       {
+    //         $match: {
+    //           day: currentMonth,
+    //         },
+    //       },
+    //     ],
+    //   },
+    // },
     {
       $project: {
         _id: true,
@@ -348,6 +368,7 @@ export const calculateDaylyRevenue = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     monthlyRevenue,
+    date,
   });
 });
 // const calculateDaylyRevenueByHotelId = catchAsyncError(

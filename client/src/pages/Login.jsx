@@ -35,7 +35,6 @@ export default function Login() {
     });
 
     if (response.status === 200) {
-      localStorage.setItem("userId", response.data.res._id);
       navigate("/");
     } else {
       navigate("/login");
@@ -54,8 +53,8 @@ export default function Login() {
         password,
       })
       .then((res) => {
-        localStorage.setItem("userId", res.data.user._id);
-        localStorage.setItem("accessToken", res.data.token);
+        sessionStorage.setItem("userId", res.data.user._id);
+        sessionStorage.setItem("accessToken", res.data.token);
         navigate("/");
       })
       .catch((err) => {

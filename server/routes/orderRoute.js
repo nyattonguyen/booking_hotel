@@ -11,6 +11,11 @@ orderRoute.get(
   orderController.getAllOrder
 );
 orderRoute.get(
+  "metwo",
+  isAuthenticatedUser,
+  orderController.getLatestTwoOrdersByUserId
+);
+orderRoute.get(
   "/month/caltulate",
   isAuthenticatedUser,
   authorizeRoles("admin"),
@@ -23,7 +28,7 @@ orderRoute.get(
   orderController.calculateWeeklyRevenue
 );
 orderRoute.post(
-  "/day/caltulate",
+  "/day/caltulate/:id",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   orderController.calculateDaylyRevenue
@@ -31,12 +36,16 @@ orderRoute.post(
 orderRoute.get(
   "/month/caltulate/:id",
   isAuthenticatedUser,
+  authorizeRoles("hotelier"),
+  authorizeRoles("admin"),
   orderController.calculateMonthlyRevenueByHotelId
 );
 
 orderRoute.get(
   "/week/caltulate/:id",
   isAuthenticatedUser,
+  authorizeRoles("hotelier"),
+  authorizeRoles("admin"),
   orderController.calculateWeeklyRevenueByHotel
 );
 

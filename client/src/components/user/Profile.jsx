@@ -26,7 +26,7 @@ export default function Profile() {
   const [state, dispatch] = useStore();
   const [user, setUser] = useState({});
   const [listOrdered, setListOrdered] = useState([]);
-  console.log(listOrdered);
+  const [twoOrder, setTwoOrder] = useState([]);
 
   const handleHomeClick = () => {
     navigate("/");
@@ -46,9 +46,16 @@ export default function Profile() {
         setListOrdered(res.data.orders);
       })
       .catch((err) => console.log(err));
+    clientAxios
+      .get(`/order/me-two/${idUser}`)
+      .then((res) => {
+        setTwoOrder(res.data.orders);
+      })
+      .catch((err) => console.log(err));
     return () => {
       setUser();
       setListOrdered();
+      setTwoOrder();
     };
   }, [idUser]);
   return (
@@ -132,9 +139,9 @@ export default function Profile() {
             </MDBCard>
 
             <MDBRow>
-              {listOrdered?.map((order) => (
-                <MDBCol md="6">
-                  <MDBCard className="mb-4 mb-md-0" key={order._id}>
+              {twoOrder?.map((order) => (
+                <MDBCol md="6" className="mb-3">
+                  <MDBCard className="mb-4 mb-md-0 mb-3" key={order._id}>
                     <MDBCardBody>
                       <MDBCardText className="mb-4">
                         <span className="text-primary font-italic me-1">
@@ -145,7 +152,7 @@ export default function Profile() {
                         className="mb-1"
                         style={{ fontSize: ".77rem" }}
                       >
-                        {order.hotel.name}
+                        {order.hotel?.name}
                       </MDBCardText>
                       <MDBProgress className="rounded">
                         <MDBProgressBar
@@ -159,7 +166,7 @@ export default function Profile() {
                         className="mt-4 mb-1"
                         style={{ fontSize: ".77rem" }}
                       >
-                        {order.hotel.address}
+                        {order.hotel?.address}
                       </MDBCardText>
 
                       <MDBCardText

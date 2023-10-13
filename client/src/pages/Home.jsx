@@ -16,6 +16,7 @@ export default function Home() {
   const { idCurrentUser } = useContext(AuthContext);
   const [currentIdCurrentUser, setCurrentIdCurrentUser] = useState(null);
   const [state, dispatch] = useStore();
+
   useEffect(() => {
     clientAxios
       .get("/category")
@@ -33,7 +34,7 @@ export default function Home() {
     if (currentIdCurrentUser !== idCurrentUser) {
       setCurrentIdCurrentUser(idCurrentUser);
     }
-    dispatch(actions.setCurrentUserId(currentIdCurrentUser));
+    dispatch(actions.setCurrentUserId(sessionStorage.getItem("userId")));
     return () => {
       setListCategory();
       setListHotel();
