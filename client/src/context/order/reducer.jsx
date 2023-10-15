@@ -37,7 +37,7 @@ export function reducer(state, action) {
 
       return {
         ...state,
-        hotel: action.payload,
+        hotel: action.payload.hotelId,
       };
     case SET_DATE_CHECK_IN_OUT:
       console.log("payload", action.payload);
@@ -70,14 +70,7 @@ export function reducer(state, action) {
       };
     case SET_CLEAR_ORDER:
       return {
-        orderItems: [
-          {
-            name: "",
-            price: 0,
-            quantity: 0,
-            roomId: "",
-          },
-        ],
+        orderItems: [],
         note: "",
         dateCheckin: "",
         dateCheckout: "",

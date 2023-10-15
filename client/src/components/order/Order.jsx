@@ -72,10 +72,14 @@ export function Order(props) {
         !isNaN(item.price) ||
         item.quantity !== undefined ||
         item.price !== undefined
-      )
-        return acc + item.price * item.quantity * amoutDate;
+      ) {
+        console.log(item);
+        return acc + item?.price * item.quantity * amoutDate;
+      } else {
+        return acc;
+      }
     }, 0);
-  }, [listOrder.orderItems, amoutDate]);
+  }, [listOrder, amoutDate]);
 
   const allowSubmit = useMemo(() => {
     return listOrder;
@@ -109,8 +113,6 @@ export function Order(props) {
         .then((res) => {
           setIdOrder(res.data.newOrder._id);
           setShowAlert(true);
-          dispatch(actions.setClearOrder());
-          handleCloseModal();
         })
         .catch((err) => console.log(err));
     } else {
@@ -119,17 +121,18 @@ export function Order(props) {
       );
     }
   };
+  const handleCloseArlert = () => {
+    setShowAlert(false);
+    dispatch(actions.setClearOrder());
 
-  const handleCloseModal = (onOpen) => {
-    return typeof onOpen === "function";
+    props.onOpen();
   };
 
-  console.log("render lai", listOrder);
-
+  console.log(listOrder);
   return (
     <>
       <Modal
-        open={isShowModal}
+        open={props.open}
         className="flex justify-center"
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -150,7 +153,7 @@ export function Order(props) {
               open={true}
               className="absolute max-w-screen-md bg-blue-700 h-28 z-10"
               icon={<Icon />}
-              onClose={() => setShowAlert(false)}
+              onClose={() => handleCloseArlert()}
             >
               <Typography variant="h5" color="white">
                 Booking thành công

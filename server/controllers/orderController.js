@@ -1,5 +1,5 @@
 import catchAsyncError from "../middleware/catchAsyncErrors.js";
-import { OrderModel, RoomModel } from "../models/index.js";
+import { HotelModel, OrderModel, RoomModel } from "../models/index.js";
 import ErrorHandler from "../utills/errorHandle.js";
 import moment from "moment/moment.js";
 export const createOrder = catchAsyncError(async (req, res, next) => {
@@ -19,12 +19,17 @@ export const createOrder = catchAsyncError(async (req, res, next) => {
   if (dateCheckinFM.isValid() && dateCheckoutFM.isValid()) {
     totalDays = dateCheckoutFM.diff(dateCheckinFM, "days");
   }
+  const hotelId = HotelModel.findById(hotel);
+  if (!hotelId) {
+    return next(new ErrorHandler("Hotel not found", 404));
+  }
   let totalPrice = 0;
   for (const orderItem of orderItems) {
     const room = await RoomModel.findById(orderItem.roomId);
     if (!room) return next(new ErrorHandler("Room not found", 404));
     totalPrice += orderItem.quantity * room.price * totalDays;
   }
+
   totalPrice = parseFloat(totalPrice);
   const newOrder = await OrderModel.create({
     orderItems,
@@ -32,9 +37,9 @@ export const createOrder = catchAsyncError(async (req, res, next) => {
     payment,
     totalPrice,
     note,
-    hotel,
-    dateCheckin: dateCheckinFM,
-    dateCheckout: dateCheckoutFM,
+    hotel: hotel,
+    dateCheckin,
+    dateCheckout,
     user: req.user._id,
   });
 
@@ -66,25 +71,20 @@ export const getOneOrder = catchAsyncError(async (req, res, next) => {
   });
 });
 
-export const getLatestTwoOrdersByUserId2 = catchAsyncError(
-  async (req, res, next) => {
-    const { id } = req.params;
-    console.log(id);
-
-    // const orders = await OrderModel.find({ user: req.params.id })
-    //   .sort({ createdAt: -1 })
-    //   .limit(2);
-    // res.status(200).json({
-    //   message: "Get two latest order successfully...",
-    //   orders,
-    // });
-  }
-);
 export const getLatestTwoOrdersByUserId = catchAsyncError(
   async (req, res, next) => {
-    console.log("aaa");
+    const { id } = req.params;
+
+    const orders = await OrderModel.find({ user: id })
+      .sort({ createdAt: -1 })
+      .limit(2);
+    res.status(200).json({
+      message: "Get two latest order successfully...",
+      orders,
+    });
   }
 );
+
 export const myOrders = catchAsyncError(async (req, res, _next) => {
   const orders = await OrderModel.find({ user: req.params.id }).populate(
     "hotel"

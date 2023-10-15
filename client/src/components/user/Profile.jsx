@@ -27,7 +27,7 @@ export default function Profile() {
   const [user, setUser] = useState({});
   const [listOrdered, setListOrdered] = useState([]);
   const [twoOrder, setTwoOrder] = useState([]);
-
+  const [isActiveHistory, setIsActiveHistory] = useState(false);
   const handleHomeClick = () => {
     navigate("/");
   };
@@ -47,7 +47,7 @@ export default function Profile() {
       })
       .catch((err) => console.log(err));
     clientAxios
-      .get(`/order/me-two/${idUser}`)
+      .get(`/order/metwo/${idUser}`)
       .then((res) => {
         setTwoOrder(res.data.orders);
       })
@@ -58,6 +58,10 @@ export default function Profile() {
       setTwoOrder();
     };
   }, [idUser]);
+  const handleHistoryOrdered = () => {
+    setIsActiveHistory(true);
+  };
+
   return (
     <section style={{ backgroundColor: "#003b95" }}>
       <Navbar />
@@ -95,7 +99,7 @@ export default function Profile() {
               <MDBCardBody className="p-0">
                 <MDBListGroup flush className="rounded-3">
                   <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                    <Button className="w-full">
+                    <Button className="w-full" onClick={handleHistoryOrdered}>
                       <i class="fas fa-clone text-warning mr-5 mb-3"></i>
                       <MDBCardText>Lịch sử đặt phòng</MDBCardText>
                     </Button>
@@ -139,59 +143,117 @@ export default function Profile() {
             </MDBCard>
 
             <MDBRow>
-              {twoOrder?.map((order) => (
-                <MDBCol md="6" className="mb-3">
-                  <MDBCard className="mb-4 mb-md-0 mb-3" key={order._id}>
-                    <MDBCardBody>
-                      <MDBCardText className="mb-4">
-                        <span className="text-primary font-italic me-1">
-                          Địa điểm booking
-                        </span>{" "}
-                      </MDBCardText>
-                      <MDBCardText
-                        className="mb-1"
-                        style={{ fontSize: ".77rem" }}
-                      >
-                        {order.hotel?.name}
-                      </MDBCardText>
-                      <MDBProgress className="rounded">
-                        <MDBProgressBar
-                          width={80}
-                          valuemin={0}
-                          valuemax={100}
-                        />
-                      </MDBProgress>
+              {isActiveHistory
+                ? listOrdered?.map((order) => (
+                    <MDBCol md="6" className="mb-3">
+                      <MDBCard className="mb-4 mb-md-0 mb-3" key={order._id}>
+                        <MDBCardBody>
+                          <MDBCardText className="mb-4">
+                            <span className="text-primary font-italic me-1">
+                              Địa điểm booking
+                            </span>{" "}
+                          </MDBCardText>
+                          <MDBCardText
+                            className="mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          >
+                            {order.hotel?.name}
+                          </MDBCardText>
+                          <MDBProgress className="rounded">
+                            <MDBProgressBar
+                              width={80}
+                              valuemin={0}
+                              valuemax={100}
+                            />
+                          </MDBProgress>
 
-                      <MDBCardText
-                        className="mt-4 mb-1"
-                        style={{ fontSize: ".77rem" }}
-                      >
-                        {order.hotel?.address}
-                      </MDBCardText>
+                          <MDBCardText
+                            className="mt-4 mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          >
+                            {order.hotel?.address}
+                          </MDBCardText>
 
-                      <MDBCardText
-                        className="mt-4 mb-1"
-                        style={{ fontSize: ".77rem" }}
-                      >
-                        {" "}
-                        Thời gian:{" "}
-                        {moment(order.dateCheckin).format("DD/MM/YYYY")} -{" "}
-                        {moment(order.dateCheckout).format("DD/MM/YYYY")}
-                      </MDBCardText>
+                          <MDBCardText
+                            className="mt-4 mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          >
+                            {" "}
+                            Thời gian:{" "}
+                            {moment(order.dateCheckin).format(
+                              "DD/MM/YYYY"
+                            )} -{" "}
+                            {moment(order.dateCheckout).format("DD/MM/YYYY")}
+                          </MDBCardText>
 
-                      <MDBCardText
-                        className="mt-4 mb-1"
-                        style={{ fontSize: ".77rem" }}
-                      ></MDBCardText>
+                          <MDBCardText
+                            className="mt-4 mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          ></MDBCardText>
 
-                      <MDBCardText
-                        className="mt-4 mb-1"
-                        style={{ fontSize: ".77rem" }}
-                      ></MDBCardText>
-                    </MDBCardBody>
-                  </MDBCard>
-                </MDBCol>
-              ))}
+                          <MDBCardText
+                            className="mt-4 mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          ></MDBCardText>
+                        </MDBCardBody>
+                      </MDBCard>
+                    </MDBCol>
+                  ))
+                : twoOrder?.map((order) => (
+                    <MDBCol md="6" className="mb-3">
+                      <MDBCard className="mb-4 mb-md-0 mb-3" key={order._id}>
+                        <MDBCardBody>
+                          <MDBCardText className="mb-4">
+                            <span className="text-primary font-italic me-1">
+                              Địa điểm booking
+                            </span>{" "}
+                          </MDBCardText>
+                          <MDBCardText
+                            className="mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          >
+                            {order.hotel?.name}
+                          </MDBCardText>
+                          <MDBProgress className="rounded">
+                            <MDBProgressBar
+                              width={80}
+                              valuemin={0}
+                              valuemax={100}
+                            />
+                          </MDBProgress>
+
+                          <MDBCardText
+                            className="mt-4 mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          >
+                            {order.hotel?.address}
+                          </MDBCardText>
+
+                          <MDBCardText
+                            className="mt-4 mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          >
+                            {" "}
+                            Thời gian:{" "}
+                            {moment(order.dateCheckin).format(
+                              "DD/MM/YYYY"
+                            )} -{" "}
+                            {moment(order.dateCheckout).format("DD/MM/YYYY")}
+                          </MDBCardText>
+
+                          <MDBCardText
+                            className="mt-4 mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          ></MDBCardText>
+
+                          <MDBCardText
+                            className="mt-4 mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          ></MDBCardText>
+                        </MDBCardBody>
+                      </MDBCard>
+                    </MDBCol>
+                  ))}
             </MDBRow>
           </MDBCol>
         </MDBRow>

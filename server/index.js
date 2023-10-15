@@ -10,7 +10,12 @@ import routes from "./routes/index.js";
 
 const app = express();
 app.use(cookieParser());
-app.use(cors({ origin: ["http://localhost:3000"], credentials: true }));
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://localhost:3001"],
+    credentials: true,
+  })
+);
 
 //middleware
 app.use(express.json());

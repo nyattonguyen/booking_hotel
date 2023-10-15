@@ -11,7 +11,7 @@ orderRoute.get(
   orderController.getAllOrder
 );
 orderRoute.get(
-  "metwo",
+  "/metwo/:id",
   isAuthenticatedUser,
   orderController.getLatestTwoOrdersByUserId
 );
@@ -51,7 +51,7 @@ orderRoute.get(
 
 orderRoute.get("/me/:id", isAuthenticatedUser, orderController.myOrders);
 orderRoute.get("/:id", isAuthenticatedUser, orderController.getOneOrder);
-orderRoute.get(
+orderRoute.patch(
   "/change-status/:id",
   isAuthenticatedUser,
   authorizeRoles("hotelier"),
