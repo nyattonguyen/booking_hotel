@@ -50,6 +50,12 @@ orderRoute.get(
 );
 
 orderRoute.get("/me/:id", isAuthenticatedUser, orderController.myOrders);
+orderRoute.get(
+  "/me/order-pending/:id",
+  isAuthenticatedUser,
+  orderController.getOrderPending
+);
+
 orderRoute.get("/:id", isAuthenticatedUser, orderController.getOneOrder);
 orderRoute.patch(
   "/change-status/:id",

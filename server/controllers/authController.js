@@ -53,6 +53,7 @@ export const loginWithGoogle = catchAsyncError(async (req, res, _next) => {
 
     await user.save();
   }
+  console.log(user);
   return res.status(200).json({
     message: "Login with Google successfully",
     code: 200,

@@ -11,7 +11,6 @@ export default function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   let idCurrentUser = sessionStorage.getItem("userId");
-  console.log("id uẻ", idCurrentUser);
   const auth = getAuth();
   useEffect(() => {
     const unsubcribed = auth.onIdTokenChanged((user) => {
@@ -29,7 +28,6 @@ export default function AuthProvider({ children }) {
               console.log(user);
               if (user != null) {
                 setUser(user);
-                console.log("co ne ing");
                 navigate("/");
               }
             })

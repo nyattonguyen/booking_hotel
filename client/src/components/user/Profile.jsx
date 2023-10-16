@@ -20,14 +20,18 @@ import { Button } from "@mui/material";
 import clientAxios from "../../api";
 import { useStore } from "../../context/order";
 import moment from "moment";
+import { CardHeader } from "@material-tailwind/react";
 
 export default function Profile() {
   const navigate = useNavigate();
   const [state, dispatch] = useStore();
   const [user, setUser] = useState({});
   const [listOrdered, setListOrdered] = useState([]);
+  const [listOrderPending, setListOrderPending] = useState([]);
   const [twoOrder, setTwoOrder] = useState([]);
   const [isActiveHistory, setIsActiveHistory] = useState(false);
+  const [isActivePending, setIsActivePending] = useState(false);
+
   const handleHomeClick = () => {
     navigate("/");
   };
@@ -41,12 +45,6 @@ export default function Profile() {
       .catch((err) => console.log(err));
 
     clientAxios
-      .get(`/order/me/${idUser}`)
-      .then((res) => {
-        setListOrdered(res.data.orders);
-      })
-      .catch((err) => console.log(err));
-    clientAxios
       .get(`/order/metwo/${idUser}`)
       .then((res) => {
         setTwoOrder(res.data.orders);
@@ -59,14 +57,30 @@ export default function Profile() {
     };
   }, [idUser]);
   const handleHistoryOrdered = () => {
-    setIsActiveHistory(true);
+    clientAxios
+      .get(`/order/me/${idUser}`)
+      .then((res) => {
+        setListOrdered(res.data.orders);
+        setIsActivePending(false);
+        setIsActiveHistory(true);
+      })
+      .catch((err) => console.log(err));
   };
-
+  const handleOrderPending = () => {
+    clientAxios
+      .get(`/order/me/order-pending/${idUser}`)
+      .then((res) => {
+        setListOrderPending(res.data.orders);
+        setIsActivePending(true);
+        setIsActiveHistory(false);
+      })
+      .catch((err) => console.log(err));
+  };
   return (
     <section style={{ backgroundColor: "#003b95" }}>
       <Navbar />
 
-      <MDBContainer className="py-5">
+      <MDBContainer className="py-5 h-full">
         <MDBRow>
           <MDBCol>
             <MDBBreadcrumb className="bg-light  rounded-3 p-3 mb-4">
@@ -105,7 +119,7 @@ export default function Profile() {
                     </Button>
                   </MDBListGroupItem>
                   <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                    <Button className="w-full">
+                    <Button className="w-full" onClick={handleOrderPending}>
                       <i className="fas fa-info-circle text-cyan-500 mr-5 mb-3"></i>
                       <MDBCardText>Booking đang tiến hành</MDBCardText>
                     </Button>
@@ -143,6 +157,72 @@ export default function Profile() {
             </MDBCard>
 
             <MDBRow>
+              {isActivePending
+                ? listOrderPending?.map((order) => (
+                    <MDBCol md="6" className="mb-3">
+                      <MDBCard className="mb-4 mb-md-0 mb-3" key={order._id}>
+                        <MDBCardBody>
+                          <MDBCardText className="mb-4">
+                            <span className="text-primary font-italic me-1">
+                              Địa điểm booking chờ duyệt
+                            </span>{" "}
+                            <Button
+                              color="warning"
+                              variant="contained"
+                              size="small"
+                              style={{ height: "30px", float: "right" }}
+                            >
+                              Cancel
+                            </Button>
+                          </MDBCardText>
+
+                          <MDBCardText
+                            className="mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          >
+                            {order.hotel?.name}
+                          </MDBCardText>
+                          <MDBProgress className="rounded">
+                            <MDBProgressBar
+                              width={80}
+                              valuemin={0}
+                              valuemax={100}
+                            />
+                          </MDBProgress>
+
+                          <MDBCardText
+                            className="mt-4 mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          >
+                            {order.hotel?.address}
+                          </MDBCardText>
+
+                          <MDBCardText
+                            className="mt-4 mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          >
+                            {" "}
+                            Thời gian:{" "}
+                            {moment(order.dateCheckin).format(
+                              "DD/MM/YYYY"
+                            )} -{" "}
+                            {moment(order.dateCheckout).format("DD/MM/YYYY")}
+                          </MDBCardText>
+
+                          <MDBCardText
+                            className="mt-4 mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          ></MDBCardText>
+
+                          <MDBCardText
+                            className="mt-4 mb-1"
+                            style={{ fontSize: ".77rem" }}
+                          ></MDBCardText>
+                        </MDBCardBody>
+                      </MDBCard>
+                    </MDBCol>
+                  ))
+                : ""}
               {isActiveHistory
                 ? listOrdered?.map((order) => (
                     <MDBCol md="6" className="mb-3">
@@ -152,6 +232,15 @@ export default function Profile() {
                             <span className="text-primary font-italic me-1">
                               Địa điểm booking
                             </span>{" "}
+                            <Button
+                              color="primary"
+                              variant="contained"
+                              size="small"
+                              disabled
+                              style={{ height: "30px", float: "right" }}
+                            >
+                              {order.status}
+                            </Button>
                           </MDBCardText>
                           <MDBCardText
                             className="mb-1"

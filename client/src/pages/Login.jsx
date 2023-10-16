@@ -35,6 +35,8 @@ export default function Login() {
     });
 
     if (response.status === 200) {
+      sessionStorage.setItem("userId", response.data.user._id);
+
       navigate("/");
     } else {
       navigate("/login");

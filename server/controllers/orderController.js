@@ -2,6 +2,7 @@ import catchAsyncError from "../middleware/catchAsyncErrors.js";
 import { HotelModel, OrderModel, RoomModel } from "../models/index.js";
 import ErrorHandler from "../utills/errorHandle.js";
 import moment from "moment/moment.js";
+import * as R from "ramda";
 export const createOrder = catchAsyncError(async (req, res, next) => {
   const {
     orderItems,
@@ -86,9 +87,10 @@ export const getLatestTwoOrdersByUserId = catchAsyncError(
 );
 
 export const myOrders = catchAsyncError(async (req, res, _next) => {
-  const orders = await OrderModel.find({ user: req.params.id }).populate(
-    "hotel"
-  );
+  const orders = await OrderModel.find({
+    user: req.params.id,
+    $or: [{ status: "Pending..." }, { status: "Success" }],
+  }).populate("hotel");
 
   res.status(200).json({
     message: "get my orders successfully",
@@ -112,6 +114,18 @@ export const updateStatusOrder = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     order,
+  });
+});
+export const getOrderPending = catchAsyncError(async (req, res, next) => {
+  const orderByUser = await OrderModel.find({
+    user: req.params.id,
+  }).populate("hotel");
+
+  const orders = orderByUser.filter((order) => order.status === "Pending...");
+
+  res.status(200).json({
+    success: true,
+    orders,
   });
 });
 export const cancelOrder = catchAsyncError(async (req, res, next) => {
