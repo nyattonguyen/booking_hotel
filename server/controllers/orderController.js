@@ -89,7 +89,7 @@ export const getLatestTwoOrdersByUserId = catchAsyncError(
 export const myOrders = catchAsyncError(async (req, res, _next) => {
   const orders = await OrderModel.find({
     user: req.params.id,
-    $or: [{ status: "Pending..." }, { status: "Success" }],
+    $or: [{ status: "Pending..." }, { status: "Successed" }],
   }).populate("hotel");
 
   res.status(200).json({
@@ -132,7 +132,7 @@ export const cancelOrder = catchAsyncError(async (req, res, next) => {
   const order = await OrderModel.findById(req.params.id);
 
   if (!order) return next(new ErrorHandler("Order not found", 404));
-  if (order.status == "Pending...") {
+  if (order.status === "Pending...") {
     order.status = "Cancel";
   } else if (order.status !== "Pending...") {
     return next(new ErrorHandler("You have already shipping this order", 400));

@@ -31,6 +31,7 @@ export default function Profile() {
   const [twoOrder, setTwoOrder] = useState([]);
   const [isActiveHistory, setIsActiveHistory] = useState(false);
   const [isActivePending, setIsActivePending] = useState(false);
+  const [isActiveTwoOrder, setIsActiveTwoOrder] = useState(true);
 
   const handleHomeClick = () => {
     navigate("/");
@@ -50,29 +51,45 @@ export default function Profile() {
         setTwoOrder(res.data.orders);
       })
       .catch((err) => console.log(err));
-    return () => {
-      setUser();
-      setListOrdered();
-      setTwoOrder();
-    };
-  }, [idUser]);
-  const handleHistoryOrdered = () => {
     clientAxios
       .get(`/order/me/${idUser}`)
       .then((res) => {
         setListOrdered(res.data.orders);
-        setIsActivePending(false);
-        setIsActiveHistory(true);
       })
       .catch((err) => console.log(err));
-  };
-  const handleOrderPending = () => {
     clientAxios
       .get(`/order/me/order-pending/${idUser}`)
       .then((res) => {
         setListOrderPending(res.data.orders);
-        setIsActivePending(true);
-        setIsActiveHistory(false);
+      })
+      .catch((err) => console.log(err));
+    return () => {
+      setUser();
+      setListOrdered();
+      setTwoOrder();
+      setListOrderPending();
+    };
+  }, [idUser]);
+  const handleHistoryOrdered = () => {
+    setIsActivePending(false);
+    setIsActiveHistory(true);
+    setIsActiveTwoOrder(false);
+  };
+  const handleOrderPending = () => {
+    setIsActivePending(true);
+    setIsActiveHistory(false);
+    setIsActiveTwoOrder(false);
+  };
+
+  const handleCancelOrder = (_id) => {
+    clientAxios
+      .get(`/order/cancel/${_id}`)
+      .then((res) => {
+        if (listOrdered) {
+          setListOrderPending((prev) => {
+            return prev.filter((item) => item._id !== _id);
+          });
+        }
       })
       .catch((err) => console.log(err));
   };
@@ -114,7 +131,7 @@ export default function Profile() {
                 <MDBListGroup flush className="rounded-3">
                   <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
                     <Button className="w-full" onClick={handleHistoryOrdered}>
-                      <i class="fas fa-clone text-warning mr-5 mb-3"></i>
+                      <i className="fas fa-clone text-warning mr-5 mb-3"></i>
                       <MDBCardText>Lịch sử đặt phòng</MDBCardText>
                     </Button>
                   </MDBListGroupItem>
@@ -171,6 +188,7 @@ export default function Profile() {
                               variant="contained"
                               size="small"
                               style={{ height: "30px", float: "right" }}
+                              onClick={() => handleCancelOrder(order._id)}
                             >
                               Cancel
                             </Button>
@@ -233,11 +251,24 @@ export default function Profile() {
                               Địa điểm booking
                             </span>{" "}
                             <Button
-                              color="primary"
+                              color="error"
                               variant="contained"
                               size="small"
                               disabled
-                              style={{ height: "30px", float: "right" }}
+                              style={{
+                                height: "30px",
+                                float: "right",
+                                backgroundColor: `${
+                                  order.status === "Pending..."
+                                    ? "#176B87"
+                                    : "rgb(14 22 45)"
+                                }`,
+                                color: `${
+                                  order.status === "Pending..."
+                                    ? "white"
+                                    : "white"
+                                }`,
+                              }}
                             >
                               {order.status}
                             </Button>
@@ -288,7 +319,10 @@ export default function Profile() {
                       </MDBCard>
                     </MDBCol>
                   ))
-                : twoOrder?.map((order) => (
+                : ""}
+
+              {isActiveTwoOrder
+                ? twoOrder?.map((order) => (
                     <MDBCol md="6" className="mb-3">
                       <MDBCard className="mb-4 mb-md-0 mb-3" key={order._id}>
                         <MDBCardBody>
@@ -342,7 +376,8 @@ export default function Profile() {
                         </MDBCardBody>
                       </MDBCard>
                     </MDBCol>
-                  ))}
+                  ))
+                : ""}
             </MDBRow>
           </MDBCol>
         </MDBRow>

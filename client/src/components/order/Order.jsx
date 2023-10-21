@@ -10,13 +10,15 @@ import {
 } from "@material-tailwind/react";
 import { actions, useStore } from "../../context/order";
 import { formatPrice } from "../../common/formatPrice";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { debounce } from "lodash";
 import clientAxios from "../../api/index";
 import { Modal } from "@mui/material";
 import CodeIcon from "@mui/icons-material/Code";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import CloseIcon from "@mui/icons-material/Close";
+import { io } from "socket.io-client";
+import { ToastContainer, toast } from "react-toastify";
 
 export function CheckIcon() {
   return (
@@ -60,6 +62,25 @@ export function Order(props) {
   const [prevIsShowModal, setPrevIsShowModal] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [idOrder, setIdOrder] = useState("");
+  let userId = sessionStorage.getItem("userId");
+
+  // const userId = order.user;
+  const receiverId = "65117d24711c7e3c9c47ee6d";
+
+  const socket = useRef();
+  useEffect(() => {
+    socket.current = io("ws://localhost:4343");
+  }, []);
+  useEffect(() => {
+    if (userId || userId !== "" || userId !== undefined || userId !== null) {
+      socket.current.on("getUsers", (users) => {
+        console.log(users);
+      });
+    } else {
+      console.log("không có userId");
+    }
+  }, [userId]);
+
   let amoutDate = Math.round(
     (new Date(listOrder.dateCheckout) - new Date(listOrder.dateCheckin)) /
       (1000 * 60 * 60 * 24)
@@ -105,7 +126,6 @@ export function Order(props) {
   const handleChaneNote = (e) => {
     debouncedDispatch(e.target.value);
   };
-
   const handleSubmit = () => {
     if (allowSubmit) {
       clientAxios
@@ -113,6 +133,17 @@ export function Order(props) {
         .then((res) => {
           setIdOrder(res.data.newOrder._id);
           setShowAlert(true);
+          toast({
+            title: "Đơn hàng mới",
+            message: `Đơn hàng mới với mã số ${res.data.newOrder._id} đã được tạo.`,
+            type: "info",
+            pauseOnHover: false,
+          });
+          socket.current.emit("sendMessage", {
+            senderId: userId,
+            receiverId,
+            text: `Đơn hàng mới với mã số ${res.data.newOrder._id} đã được tạo.`,
+          });
         })
         .catch((err) => console.log(err));
     } else {

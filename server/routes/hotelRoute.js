@@ -28,8 +28,8 @@ hotelRoute.put(
   hotelController.updateHotel
 );
 
-hotelRoute.get(
-  "/change-status/:id",
+hotelRoute.patch(
+  "/admin/change-status/:id",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   hotelController.updateHotelStatus

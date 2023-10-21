@@ -9,6 +9,7 @@ import { AuthContext } from "../context";
 import { actions, useStore } from "../context/order";
 import Search from "../components/home/Search";
 import moment from "moment";
+import { io } from "socket.io-client";
 
 export default function Home() {
   const [listCategory, setListCategory] = useState([]);
@@ -16,7 +17,22 @@ export default function Home() {
   const { idCurrentUser } = useContext(AuthContext);
   const [currentIdCurrentUser, setCurrentIdCurrentUser] = useState(null);
   const [state, dispatch] = useStore();
+  let userId = sessionStorage.getItem("userId");
 
+  const socket = useRef();
+  useEffect(() => {
+    socket.current = io("ws://localhost:4343");
+  }, []);
+  useEffect(() => {
+    if (userId !== "" || userId !== undefined || userId !== null) {
+      socket.current.emit("addUser", userId);
+      socket.current.on("getUsers", (users) => {
+        console.log(users);
+      });
+    } else {
+      console.log("không có userId");
+    }
+  }, [userId]);
   useEffect(() => {
     clientAxios
       .get("/category")
@@ -34,7 +50,7 @@ export default function Home() {
     if (currentIdCurrentUser !== idCurrentUser) {
       setCurrentIdCurrentUser(idCurrentUser);
     }
-    dispatch(actions.setCurrentUserId(sessionStorage.getItem("userId")));
+    dispatch(actions.setCurrentUserId(userId));
     return () => {
       setListCategory();
       setListHotel();
@@ -147,7 +163,15 @@ export default function Home() {
   useEffect(() => {
     setHotelFilter(fillType);
   }, [checkedCategoryItems]);
-
+  //\\//
+  // useEffect(() => {
+  //   const socket = io("ws://localhost:4000");
+  //   console.log(
+  //     socket.on("firstEvent", (msg) => {
+  //       console.log(msg);
+  //     })
+  //   );
+  // }, []);
   return (
     <div className="">
       <Header />
@@ -172,7 +196,9 @@ export default function Home() {
             listHotel={hotelFilter.length === 0 ? listHotel : hotelFilter}
           />
         ) : (
-          <LoadingCard />
+          <div className="mt-16">
+            <LoadingCard />
+          </div>
         )}
       </div>
     </div>

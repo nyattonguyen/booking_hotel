@@ -94,7 +94,6 @@ export const updateHotelStatus = catchAsyncError(async (req, res, next) => {
   if (!hotel) {
     return next(new ErrorHandler("Not found", 404));
   }
-  console.log(hotel.status);
   if (hotel.status == true) {
     hotel.status = false;
   } else {

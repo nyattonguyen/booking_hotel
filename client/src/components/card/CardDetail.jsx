@@ -14,6 +14,8 @@ import { useParams } from "react-router-dom";
 import { actions, useStore } from "../../context/order";
 import { Order } from "../order/Order";
 import ShowerIcon from "@mui/icons-material/Shower";
+import { io } from "socket.io-client";
+import { useRef } from "react";
 
 export function CardDetail() {
   const id = useParams();
@@ -22,8 +24,25 @@ export function CardDetail() {
   const [room, setRoom] = useState([]);
   const [isDate, setIsDate] = useState(false);
   const [isRoom, setIsRoom] = useState(false);
-
   const [order, dispatch] = useStore();
+  const receiverId = "65117d24711c7e3c9c47ee6d";
+  // let userId = sessionStorage.getItem("userId");
+
+  // const userId = order.user;
+
+  // const socket = useRef();
+  // useEffect(() => {
+  //   socket.current = io("ws://localhost:4343");
+  // }, []);
+  // useEffect(() => {
+  //   if (userId !== "" || userId !== undefined || userId !== null) {
+  //     socket.current.on("getUsers", (users) => {
+  //       console.log(users);
+  //     });
+  //   } else {
+  //     console.log("không có userId");
+  //   }
+  // }, [userId]);
   const handleOpen = () => {
     if (order.dateCheckin === "" || order.dateCheckout === "") {
       setIsDate(true);

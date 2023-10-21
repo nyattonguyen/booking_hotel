@@ -8,6 +8,7 @@ import {
   MDBInput,
   MDBCheckbox,
 } from "mdb-react-ui-kit";
+import { Alert } from "@mui/material";
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import clientAxios from "../api/index";
@@ -15,10 +16,11 @@ import { actions, useStore } from "../context/order";
 
 export default function Login() {
   const auth = getAuth();
-  const [state, dispatch] = useStore();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+
   const navigate = useNavigate();
 
   const handleLoginWithGoogle = async () => {
@@ -35,8 +37,7 @@ export default function Login() {
     });
 
     if (response.status === 200) {
-      sessionStorage.setItem("userId", response.data.user._id);
-
+      sessionStorage.setItem("userId", response.data.res._id);
       navigate("/");
     } else {
       navigate("/login");
@@ -46,8 +47,10 @@ export default function Login() {
   ///\\\///
   const handleLogin = () => {
     if (email === "" && password === "") {
+      setError(true);
       return;
     }
+    setError(false);
 
     clientAxios
       .post("/auth/login", {
@@ -79,6 +82,13 @@ export default function Login() {
           <MDBContainer className="align-middle justify-center">
             <h1 className="mb-3 mb-2 ">MT BOOKING</h1>
           </MDBContainer>
+          {error ? (
+            <Alert severity="error" style={{ marginBottom: "6px" }}>
+              Email hoặc password bị sai!
+            </Alert>
+          ) : (
+            ""
+          )}
           <div>
             <MDBInput
               wrapperClass="mb-4"
